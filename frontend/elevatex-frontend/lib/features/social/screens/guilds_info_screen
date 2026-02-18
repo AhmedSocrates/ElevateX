@@ -1,0 +1,356 @@
+Container(
+    width: 416,
+    height: 705,
+    decoration: BoxDecoration(color: const Color(0xFF1A103C)),
+    child: Stack(
+        children: [
+            Positioned(
+                left: 11,
+                top: 0,
+                child: Container(
+                    width: 393.60,
+                    height: 651.20,
+                    child: Stack(
+                        children: [
+                            Positioned(
+                                left: 0,
+                                top: 0,
+                                child: Container(
+                                    width: 394,
+                                    height: 792,
+                                    decoration: BoxDecoration(color: const Color(0xFF1A103C)),
+                                    child: Stack(
+                                        children: [
+                                            Positioned(
+                                                left: 0,
+                                                top: 0,
+                                                child: Container(
+                                                    width: 394,
+                                                    height: 700,
+                                                    child: Stack(
+                                                        children: [
+                                                            Positioned(
+                                                                left: 0,
+                                                                top: 0,
+                                                                child: Container(
+                                                                    width: 394,
+                                                                    height: 700,
+                                                                    decoration: BoxDecoration(color: const Color(0xFF1A103C)),
+                                                                    child: Stack(
+                                                                        children: [
+                                                                            Positioned(
+                                                                                left: 20,
+                                                                                top: 20,
+                                                                                child: Container(
+                                                                                    width: 353.60,
+                                                                                    height: 48,
+                                                                                    child: Stack(
+                                                                                        children: [
+                                                                                            Positioned(
+                                                                                                left: 0,
+                                                                                                top: 0,
+                                                                                                child: Container(
+                                                                                                    width: 48,
+                                                                                                    height: 48,
+                                                                                                    decoration: ShapeDecoration(
+                                                                                                        color: const Color(0xFF2D1B58),
+                                                                                                        shape: RoundedRectangleBorder(
+                                                                                                            borderRadius: BorderRadius.circular(9999),
+                                                                                                        ),
+                                                                                                    ),
+                                                                                                    child: Stack(
+                                                                                                        children: [
+                                                                                                            Positioned(
+                                                                                                                left: 13,
+                                                                                                                top: 13,
+                                                                                                                child: Container(
+                                                                                                                    width: 22,
+                                                                                                                    height: 22,
+                                                                                                                    clipBehavior: Clip.antiAlias,
+                                                                                                                    decoration: BoxDecoration(),
+                                                                                                                    child: Stack(),
+                                                                                                                ),
+                                                                                                            ),
+                                                                                                        ],
+                                                                                                    ),
+                                                                                                ),
+                                                                                            ),
+                                                                                            Positioned(
+                                                                                                left: 60,
+                                                                                                top: 8,
+                                                                                                child: Container(
+                                                                                                    width: 245.71,
+                                                                                                    height: 32,
+                                                                                                    child: Stack(
+                                                                                                        children: [
+                                                                                                            Positioned(
+                                                                                                                left: 1,
+                                                                                                                top: 0,
+                                                                                                                child: SizedBox(
+                                                                                                                    width: 245.71,
+                                                                                                                    height: 32,
+                                                                                                                    child: Text(
+                                                                                                                        'Wizard Guild ',
+                                                                                                                        style: TextStyle(
+                                                                                                                            color: Colors.white,
+                                                                                                                            fontSize: 20.40,
+                                                                                                                            fontFamily: 'Inter',
+                                                                                                                            fontWeight: FontWeight.w700,
+                                                                                                                            height: 1.57,
+                                                                                                                        ),
+                                                                                                                    ),
+                                                                                                                ),
+                                                                                                            ),
+                                                                                                        ],
+                                                                                                    ),
+                                                                                                ),
+                                                                                            ),
+                                                                                        ],
+                                                                                    ),
+                                                                                ),
+                                                                            ),
+                                                                            Positioned(
+                                                                                left: 20,
+                                                                                top: 381,
+                                                                                child: Container(
+                                                                                    width: 354,
+                                                                                    height: 276,
+                                                                                    decoration: ShapeDecoration(
+                                                                                        color: const Color(0xFF2D1B58),
+                                                                                        shape: RoundedRectangleBorder(
+                                                                                            borderRadius: BorderRadius.circular(12),
+                                                                                        ),
+                                                                                    ),
+                                                                                    child: Stack(
+                                                                                        children: [
+                                                                                            Positioned(
+                                                                                                left: 20,
+                                                                                                top: 10,
+                                                                                                child: SizedBox(
+                                                                                                    width: 139,
+                                                                                                    height: 21,
+                                                                                                    child: Text(
+                                                                                                        'Members',
+                                                                                                        style: TextStyle(
+                                                                                                            color: const Color(0xFFFFCC57),
+                                                                                                            fontSize: 13.60,
+                                                                                                            fontFamily: 'Inter',
+                                                                                                            fontWeight: FontWeight.w500,
+                                                                                                            height: 1.76,
+                                                                                                        ),
+                                                                                                    ),
+                                                                                                ),
+                                                                                            ),
+                                                                                            Positioned(
+                                                                                                left: 24,
+                                                                                                top: 42,
+                                                                                                child: SizedBox(
+                                                                                                    width: 310,
+                                                                                                    height: 189,
+                                                                                                    child: Text(
+                                                                                                        'MagicDev - Leader\n                                                     DragonCoder - Co-Leader\n\nCodeWizard - Member\n\nApprenticeWizard - Member\n',
+                                                                                                        style: TextStyle(
+                                                                                                            color: Colors.white,
+                                                                                                            fontSize: 13.60,
+                                                                                                            fontFamily: 'Inter',
+                                                                                                            fontWeight: FontWeight.w500,
+                                                                                                            height: 1.76,
+                                                                                                        ),
+                                                                                                    ),
+                                                                                                ),
+                                                                                            ),
+                                                                                            Positioned(
+                                                                                                left: 0,
+                                                                                                top: 73,
+                                                                                                child: Container(
+                                                                                                    width: 354,
+                                                                                                    decoration: ShapeDecoration(
+                                                                                                        shape: RoundedRectangleBorder(
+                                                                                                            side: BorderSide(
+                                                                                                                width: 1,
+                                                                                                                strokeAlign: BorderSide.strokeAlignCenter,
+                                                                                                                color: const Color(0xFFFFCC57),
+                                                                                                            ),
+                                                                                                        ),
+                                                                                                    ),
+                                                                                                ),
+                                                                                            ),
+                                                                                            Positioned(
+                                                                                                left: 0,
+                                                                                                top: 125,
+                                                                                                child: Container(
+                                                                                                    width: 354,
+                                                                                                    decoration: ShapeDecoration(
+                                                                                                        shape: RoundedRectangleBorder(
+                                                                                                            side: BorderSide(
+                                                                                                                width: 1,
+                                                                                                                strokeAlign: BorderSide.strokeAlignCenter,
+                                                                                                                color: const Color(0xFFFFCC57),
+                                                                                                            ),
+                                                                                                        ),
+                                                                                                    ),
+                                                                                                ),
+                                                                                            ),
+                                                                                            Positioned(
+                                                                                                left: 0,
+                                                                                                top: 173,
+                                                                                                child: Container(
+                                                                                                    width: 354,
+                                                                                                    decoration: ShapeDecoration(
+                                                                                                        shape: RoundedRectangleBorder(
+                                                                                                            side: BorderSide(
+                                                                                                                width: 1,
+                                                                                                                strokeAlign: BorderSide.strokeAlignCenter,
+                                                                                                                color: const Color(0xFFFFCC57),
+                                                                                                            ),
+                                                                                                        ),
+                                                                                                    ),
+                                                                                                ),
+                                                                                            ),
+                                                                                            Positioned(
+                                                                                                left: 2,
+                                                                                                top: 220,
+                                                                                                child: Container(
+                                                                                                    width: 354,
+                                                                                                    decoration: ShapeDecoration(
+                                                                                                        shape: RoundedRectangleBorder(
+                                                                                                            side: BorderSide(
+                                                                                                                width: 1,
+                                                                                                                strokeAlign: BorderSide.strokeAlignCenter,
+                                                                                                                color: const Color(0xFFFFCC57),
+                                                                                                            ),
+                                                                                                        ),
+                                                                                                    ),
+                                                                                                ),
+                                                                                            ),
+                                                                                        ],
+                                                                                    ),
+                                                                                ),
+                                                                            ),
+                                                                            Positioned(
+                                                                                left: 20,
+                                                                                top: 256,
+                                                                                child: Container(
+                                                                                    width: 354,
+                                                                                    height: 89,
+                                                                                    decoration: ShapeDecoration(
+                                                                                        color: const Color(0xFF2D1B58),
+                                                                                        shape: RoundedRectangleBorder(
+                                                                                            borderRadius: BorderRadius.circular(12),
+                                                                                        ),
+                                                                                    ),
+                                                                                    child: Stack(
+                                                                                        children: [
+                                                                                            Positioned(
+                                                                                                left: 20,
+                                                                                                top: 10,
+                                                                                                child: SizedBox(
+                                                                                                    width: 139,
+                                                                                                    height: 21,
+                                                                                                    child: Text(
+                                                                                                        'Ranking',
+                                                                                                        style: TextStyle(
+                                                                                                            color: const Color(0xFFFFCC57),
+                                                                                                            fontSize: 13.60,
+                                                                                                            fontFamily: 'Inter',
+                                                                                                            fontWeight: FontWeight.w500,
+                                                                                                            height: 1.76,
+                                                                                                        ),
+                                                                                                    ),
+                                                                                                ),
+                                                                                            ),
+                                                                                            Positioned(
+                                                                                                left: 24,
+                                                                                                top: 42,
+                                                                                                child: SizedBox(
+                                                                                                    width: 310,
+                                                                                                    height: 37,
+                                                                                                    child: Text(
+                                                                                                        '#100 globally in frontend missions and quests',
+                                                                                                        style: TextStyle(
+                                                                                                            color: Colors.white,
+                                                                                                            fontSize: 13.60,
+                                                                                                            fontFamily: 'Inter',
+                                                                                                            fontWeight: FontWeight.w500,
+                                                                                                            height: 1.76,
+                                                                                                        ),
+                                                                                                    ),
+                                                                                                ),
+                                                                                            ),
+                                                                                        ],
+                                                                                    ),
+                                                                                ),
+                                                                            ),
+                                                                        ],
+                                                                    ),
+                                                                ),
+                                                            ),
+                                                        ],
+                                                    ),
+                                                ),
+                                            ),
+                                        ],
+                                    ),
+                                ),
+                            ),
+                            Positioned(
+                                left: 20,
+                                top: 96,
+                                child: Container(
+                                    width: 353.60,
+                                    height: 136,
+                                    decoration: ShapeDecoration(
+                                        color: const Color(0xFF2D1B58),
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(12),
+                                        ),
+                                    ),
+                                    child: Stack(
+                                        children: [
+                                            Positioned(
+                                                left: 20,
+                                                top: 10,
+                                                child: SizedBox(
+                                                    width: 139,
+                                                    height: 21,
+                                                    child: Text(
+                                                        'About Wizard Guild',
+                                                        style: TextStyle(
+                                                            color: const Color(0xFFFFCC57),
+                                                            fontSize: 13.60,
+                                                            fontFamily: 'Inter',
+                                                            fontWeight: FontWeight.w500,
+                                                            height: 1.76,
+                                                        ),
+                                                    ),
+                                                ),
+                                            ),
+                                            Positioned(
+                                                left: 24,
+                                                top: 42,
+                                                child: SizedBox(
+                                                    width: 310,
+                                                    height: 53,
+                                                    child: Text(
+                                                        'This Guild contains passionate Tech learners from around the world, it is specialized in mainly fronted activities',
+                                                        style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontSize: 13.60,
+                                                            fontFamily: 'Inter',
+                                                            fontWeight: FontWeight.w500,
+                                                            height: 1.76,
+                                                        ),
+                                                    ),
+                                                ),
+                                            ),
+                                        ],
+                                    ),
+                                ),
+                            ),
+                        ],
+                    ),
+                ),
+            ),
+        ],
+    ),
+)
