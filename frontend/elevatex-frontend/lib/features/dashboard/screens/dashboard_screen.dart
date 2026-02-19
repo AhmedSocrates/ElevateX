@@ -1,48 +1,79 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../providers/progress_provider.dart';
+import '../../auth/providers/auth_provider.dart';
+import '../../auth/models/user_model.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../shared/widgets/custom_surface_card.dart';
 import '../../../shared/widgets/xp_progress_bar.dart';
 import '../../../shared/widgets/custom_primary_button.dart';
 
-class DashboardScreen extends StatelessWidget {
+class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildHeader(),
-              const SizedBox(height: 24),
-              _buildStreakCard(),
-              const SizedBox(height: 24),
-              _buildLevelProgressCard(),
-              const SizedBox(height: 24),
-              _buildSectionHeader('Daily Quests', onSeeAll: () {}),
-              const SizedBox(height: 12),
-              _buildQuestCard(),
-              const SizedBox(height: 24),
-              _buildSectionHeader('Your Career Path', onSeeAll: () {}),
-              const SizedBox(height: 12),
-              _buildCareerPathCard(),
-              const SizedBox(height: 24),
-              _buildSectionHeader('Magic Streak'),
-              const SizedBox(height: 12),
-              _buildMagicStreakCalendar(),
-              const SizedBox(height: 100), // Bottom padding for content
-            ],
+  Widget build(BuildContext context, WidgetRef ref) {
+    final authState = ref.watch(authProvider);
+    final progress = ref.watch(progressProvider);
+
+    return authState.when(
+      data: (user) {
+        if (user == null) {
+          return Scaffold(
+            body: Center(
+              child: ElevatedButton(
+                onPressed: () => ref.read(authProvider.notifier).login('test@example.com', 'password'),
+                child: const Text('Login to Magic Guild'),
+              ),
+            ),
+          );
+        }
+        return Scaffold(
+          body: SafeArea(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildHeader(user),
+                  const SizedBox(height: 24),
+                  _buildStreakCard(user.currentStreak),
+                  const SizedBox(height: 24),
+                  _buildLevelProgressCard(progress),
+                  const SizedBox(height: 24),
+                  _buildSectionHeader('Daily Quests', onSeeAll: () {}),
+                  const SizedBox(height: 12),
+                  _buildQuestCard(),
+                  const SizedBox(height: 24),
+                  _buildSectionHeader('Your Career Path', onSeeAll: () {}),
+                  const SizedBox(height: 12),
+                  _buildCareerPathCard(),
+                  const SizedBox(height: 24),
+                  _buildSectionHeader('Magic Streak'),
+                  const SizedBox(height: 12),
+                  _buildMagicStreakCalendar(),
+                  const SizedBox(height: 100),
+                ],
+              ),
+            ),
           ),
+        );
+      },
+      loading: () => const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(color: AppColors.primary),
+        ),
+      ),
+      error: (err, stack) => Scaffold(
+        body: Center(
+          child: Text('Error: $err', style: AppTextStyles.bodyMd),
         ),
       ),
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(UserModel user) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -50,7 +81,7 @@ class DashboardScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('Welcome back,', style: AppTextStyles.h2),
-            Text('Apprentice Wizard', style: AppTextStyles.bodyMd),
+            Text(user.name, style: AppTextStyles.bodyMd),
           ],
         ),
         Container(
@@ -75,7 +106,7 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStreakCard() {
+  Widget _buildStreakCard(int streak) {
     return CustomSurfaceCard(
       child: Row(
         children: [
@@ -97,11 +128,11 @@ class DashboardScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text('Daily Streak', style: AppTextStyles.bodyMd.copyWith(color: AppColors.white, fontWeight: FontWeight.w500)),
-                    Text('7 days', style: AppTextStyles.bodyMd.copyWith(color: AppColors.accentGold, fontWeight: FontWeight.w700)),
+                    Text('$streak days', style: AppTextStyles.bodyMd.copyWith(color: AppColors.accentGold, fontWeight: FontWeight.w700)),
                   ],
                 ),
                 const SizedBox(height: 8),
-                const XpProgressBar(progress: 0.7),
+                XpProgressBar(progress: streak / 10), // Mock progress calculation
               ],
             ),
           ),
@@ -110,7 +141,7 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildLevelProgressCard() {
+  Widget _buildLevelProgressCard(UserProgress progress) {
     return CustomSurfaceCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -118,12 +149,12 @@ class DashboardScreen extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Apprentice Level 3', style: AppTextStyles.bodyLg),
-              Text('750 / 1000 XP', style: AppTextStyles.bodySm.copyWith(color: AppColors.accentGold)),
+              Text('Apprentice Level ${progress.level}', style: AppTextStyles.bodyLg),
+              Text('${progress.currentXp} / ${progress.nextLevelXp} XP', style: AppTextStyles.bodySm.copyWith(color: AppColors.accentGold)),
             ],
           ),
           const SizedBox(height: 12),
-          const XpProgressBar(progress: 0.75, height: 10),
+          XpProgressBar(progress: progress.progress, height: 10),
           const SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,

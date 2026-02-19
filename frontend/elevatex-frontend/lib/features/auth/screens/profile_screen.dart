@@ -1,65 +1,77 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../auth/providers/auth_provider.dart';
+import '../../dashboard/providers/progress_provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../shared/widgets/custom_surface_card.dart';
 import '../../../shared/widgets/xp_progress_bar.dart';
 import '../../../shared/widgets/custom_primary_button.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final authState = ref.watch(authProvider);
+    final progress = ref.watch(progressProvider);
+
     return Scaffold(
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildAppBar(context),
-              const SizedBox(height: 24),
-              _buildProfileHeader(),
-              const SizedBox(height: 24),
-              _buildStatsRow(),
-              const SizedBox(height: 24),
-              _buildLevelProgress(),
-              const SizedBox(height: 24),
-              CustomPrimaryButton(
-                text: 'Edit Profile',
-                onPressed: () {},
-                // Outline style placeholder
+      body: authState.when(
+        data: (user) {
+          if (user == null) {
+            return const Center(child: Text('Please log in'));
+          }
+          return SafeArea(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildAppBar(context),
+                  const SizedBox(height: 24),
+                  _buildProfileHeader(user),
+                  const SizedBox(height: 24),
+                  _buildStatsRow(user),
+                  const SizedBox(height: 24),
+                  _buildLevelProgress(progress),
+                  const SizedBox(height: 24),
+                  CustomPrimaryButton(
+                    text: 'Edit Profile',
+                    onPressed: () {},
+                  ),
+                  const SizedBox(height: 32),
+                  _buildSectionHeader('Recent Achievements'),
+                  const SizedBox(height: 16),
+                  _buildAchievementItem(
+                    icon: Icons.auto_awesome,
+                    title: 'First Steps',
+                    subtitle: 'Complete your first quest',
+                    color: AppColors.primary,
+                  ),
+                  const SizedBox(height: 12),
+                  _buildAchievementItem(
+                    icon: Icons.local_fire_department,
+                    title: 'Streak Master',
+                    subtitle: 'Maintain a 7-day streak',
+                    color: AppColors.accentOrange,
+                  ),
+                  const SizedBox(height: 32),
+                  _buildMenuTile(Icons.notifications_none, 'Notifications', onTap: () {}),
+                  _buildMenuTile(
+                    Icons.logout, 
+                    'Log Out', 
+                    onTap: () => ref.read(authProvider.notifier).logout(), 
+                    isLast: true
+                  ),
+                  const SizedBox(height: 40),
+                ],
               ),
-              const SizedBox(height: 32),
-              _buildSectionHeader('Recent Achievements'),
-              const SizedBox(height: 16),
-              _buildAchievementItem(
-                icon: Icons.auto_awesome,
-                title: 'First Steps',
-                subtitle: 'Complete your first quest',
-                color: AppColors.primary,
-              ),
-              const SizedBox(height: 12),
-              _buildAchievementItem(
-                icon: Icons.local_fire_department,
-                title: 'Streak Master',
-                subtitle: 'Maintain a 7-day streak',
-                color: AppColors.accentOrange,
-              ),
-              const SizedBox(height: 12),
-              _buildAchievementItem(
-                icon: Icons.school,
-                title: 'Frontend Apprentice',
-                subtitle: 'Complete the HTML basics path',
-                color: AppColors.accentGold,
-              ),
-              const SizedBox(height: 32),
-              _buildMenuTile(Icons.notifications_none, 'Notifications', onTap: () {}),
-              _buildMenuTile(Icons.logout, 'Log Out', onTap: () {}, isLast: true),
-              const SizedBox(height: 40),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
+        loading: () => const Center(child: CircularProgressIndicator(color: AppColors.primary)),
+        error: (err, stack) => Center(child: Text('Error: $err')),
       ),
     );
   }
@@ -80,7 +92,7 @@ class ProfileScreen extends StatelessWidget {
       child: Container(
         width: 48,
         height: 48,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           color: AppColors.surfaceLight,
           shape: BoxShape.circle,
         ),
@@ -89,7 +101,7 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildProfileHeader() {
+  Widget _buildProfileHeader(user) {
     return Center(
       child: Column(
         children: [
@@ -112,20 +124,20 @@ class ProfileScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          Text('Apprentice Wizard', style: AppTextStyles.h2),
-          Text('@wizard_apprentice', style: AppTextStyles.bodyMd.copyWith(color: AppColors.textSecondary)),
+          Text(user.name, style: AppTextStyles.h2),
+          Text('@${user.name.toLowerCase().replaceAll(' ', '_')}', style: AppTextStyles.bodyMd.copyWith(color: AppColors.textSecondary)),
         ],
       ),
     );
   }
 
-  Widget _buildStatsRow() {
+  Widget _buildStatsRow(user) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        _buildStatItem(Icons.workspace_premium, 'Level 3', 'Apprentice', AppColors.accentGold),
+        _buildStatItem(Icons.workspace_premium, 'Level ${user.level}', 'Apprentice', AppColors.accentGold),
         _buildVerticalDivider(),
-        _buildStatItem(Icons.local_fire_department, '7 days', 'Streak', AppColors.accentOrange),
+        _buildStatItem(Icons.local_fire_department, '${user.currentStreak} days', 'Streak', AppColors.accentOrange),
         _buildVerticalDivider(),
         _buildStatItem(Icons.bolt, '12', 'Quests', AppColors.primary),
       ],
@@ -156,18 +168,18 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildLevelProgress() {
+  Widget _buildLevelProgress(progress) {
     return Column(
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text('Next level', style: AppTextStyles.bodyMd),
-            Text('750 / 1000 XP', style: AppTextStyles.bodyMd.copyWith(color: AppColors.accentGold)),
+            Text('${progress.currentXp} / ${progress.nextLevelXp} XP', style: AppTextStyles.bodyMd.copyWith(color: AppColors.accentGold)),
           ],
         ),
         const SizedBox(height: 12),
-        const XpProgressBar(progress: 0.75, height: 8),
+        XpProgressBar(progress: progress.progress, height: 8),
       ],
     );
   }
@@ -237,7 +249,7 @@ class ProfileScreen extends StatelessWidget {
                 const SizedBox(width: 16),
                 Text(title, style: AppTextStyles.bodyMd),
                 const Spacer(),
-                Icon(Icons.chevron_right, color: AppColors.textSecondary),
+                const Icon(Icons.chevron_right, color: AppColors.textSecondary),
               ],
             ),
           ),
