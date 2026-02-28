@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../providers/progress_provider.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../auth/models/user_model.dart';
@@ -23,7 +24,8 @@ class DashboardScreen extends ConsumerWidget {
           return Scaffold(
             body: Center(
               child: ElevatedButton(
-                onPressed: () => ref.read(authProvider.notifier).login('test@example.com', 'password'),
+                onPressed: () => context.go("/login"),
+                // onPressed: () => ref.read(authProvider.notifier).login('test@example.com', 'password'),
                 child: const Text('Login to Magic Guild'),
               ),
             ),

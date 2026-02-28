@@ -25,6 +25,21 @@ class AuthNotifier extends AsyncNotifier<UserModel?> {
     ));
   }
 
+  Future<void> signup(String username, String email, String password) async {
+    state = const AsyncLoading();
+    
+    // Simulate network delay
+    await Future.delayed(const Duration(seconds: 2));
+    
+    state = AsyncData(UserModel(
+      id: '2',
+      name: username,
+      level: 12,
+      totalXp: 12500,
+      currentStreak: 7,
+    ));
+  }
+
   Future<void> logout() async {
     state = const AsyncLoading();
     await Future.delayed(const Duration(seconds: 1));

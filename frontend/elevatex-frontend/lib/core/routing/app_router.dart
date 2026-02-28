@@ -1,4 +1,6 @@
 import 'package:go_router/go_router.dart';
+import '../../features/auth/screens/login_screen.dart';
+import '../../features/auth/screens/register_screen.dart';
 import '../../features/dashboard/screens/dashboard_screen.dart';
 import '../../features/auth/screens/profile_screen.dart';
 import '../../features/ai_mentor/screens/ai_mentor_screen.dart';
@@ -47,12 +49,16 @@ class AppRouter {
         ],
       ),
       // Auth routes (placeholders as I need to verify LoginScreen)
-      /*
+      
       GoRoute(
         path: '/login',
         builder: (context, state) => const LoginScreen(),
       ),
-      */
+      GoRoute(
+        path: '/register',
+        builder: (context, state) => const RegisterScreen(),
+      ),
+      
     ],
   );
 }
