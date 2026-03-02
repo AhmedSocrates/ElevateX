@@ -1,0 +1,20 @@
+// For the loading variable in login and register screens
+
+
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+final loadingProvider = NotifierProvider<LoadingNotifier, bool>(LoadingNotifier.new);
+
+class LoadingNotifier extends Notifier<bool>{
+
+
+  @override
+  bool build() {
+    return false;
+  }
+
+  void setLoading(bool loading) {
+    state = loading;
+  }
+  
+}

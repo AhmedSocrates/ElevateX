@@ -1,3 +1,4 @@
+import 'package:elevatex/core/theme/app_text_styles.dart';
 import 'package:elevatex/features/auth/providers/auth_provider.dart';
 import 'package:elevatex/features/auth/providers/loading_provider.dart';
 import 'package:elevatex/features/auth/widgets/text_input_field.dart';
@@ -6,38 +7,31 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../core/theme/app_text_styles.dart';
 
-
-class RegisterScreen extends ConsumerStatefulWidget {
-  const RegisterScreen({super.key});
+class LoginScreen extends ConsumerStatefulWidget {
+  const LoginScreen({super.key});
 
   @override
-  ConsumerState<RegisterScreen> createState() => _RegisterScreenState();
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _RegisterScreenState extends ConsumerState<RegisterScreen> {
+class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _nameController =  TextEditingController();
   final TextEditingController _emailController =  TextEditingController();
-  final TextEditingController _passwordController =  TextEditingController();
-  final TextEditingController _confirmPasswordController =  TextEditingController();
+  final TextEditingController _passwordController=  TextEditingController();
 
-  bool isLoading = false;
 
-  
   @override
   Widget build(BuildContext context) {
     
     return Scaffold(
       appBar: AppBar(
-        title: Text("Register"),
-        centerTitle: true,
+        title: Text("Login"),
         backgroundColor: Colors.transparent,
+        centerTitle: true,
       ),
       body: Padding(
-          padding: EdgeInsetsGeometry.only(left: 20, right: 20),
-        
+        padding: EdgeInsetsGeometry.only(left: 20, right: 20),
         child: Center(
           child: SingleChildScrollView(
             scrollDirection: Axis.vertical,
@@ -47,37 +41,26 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Container(
-                    height: 100,
-                    width: 100,
-                    decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 0, 0, 0),
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.blue, width: 2.0)
+                  Padding(
+                    padding: const EdgeInsetsGeometry.symmetric(vertical: 5),
+                    child: Container(
+                      height: 100,
+                      width: 100,
+                      
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 0, 0, 0),
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.blue, width: 2.0)
+                      ),
+                      child: Center(
+                        child: Text("ElevateX Icon"),
+                      ),
+                      
                     ),
-                    child: Center(
-                      child: Text("ElevateX Icon"),
-                    ),
-                    
                   ),
                   ElevateTextField(
-                    textEditingController: _nameController, 
-                    hintText: "username",
-                    textInputAction: TextInputAction.next, 
-                    textInputType: TextInputType.text,
-                    validator: (value) {
-                      if(value == null || value.isEmpty) {
-                        return "Please enter your username";
-                      }
-                      else {
-                        return null;
-                      }
-                    },
-                  ),
-        
-                  ElevateTextField(
+                    hintText: "example@test.com",
                     textEditingController: _emailController, 
-                    hintText: "example@Test.com",
                     textInputAction: TextInputAction.next, 
                     textInputType: TextInputType.emailAddress,
                     validator: (value) {
@@ -85,21 +68,21 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       if(value == null || value.isEmpty) {
                         return "Please enter your email address";
                       }
-          
+              
                       else if (!emailRegex.hasMatch(value)) {
                         return "Please enter a valid email address";
                       }
-          
+              
                       else {
                         return null;
                       }
                     },
                   ),
-        
+            
                   ElevateTextField(
-                    hintText: "passowrd",
+                    hintText: "Passowrd1@12",
                     textEditingController: _passwordController, 
-                    textInputAction: TextInputAction.next,
+                    textInputAction: TextInputAction.done,
                     textInputType: TextInputType.text,
                     obscureText: true,
                     validator: (value) {
@@ -108,78 +91,54 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       if(value == null || value.isEmpty) {
                         return "Please enter your password";
                       }
-          
+              
                       else if (!passwordRegex.hasMatch(value)) {
                         return "Please enter a valid passowrd";
                       }
-          
+              
                       else {
                         return null;
                       }
                     }
                   ),
-        
-                  ElevateTextField(
-                    hintText: "confirm passowrd",
-                    textEditingController: _confirmPasswordController, 
-                    textInputAction: TextInputAction.done,
-                    textInputType: TextInputType.text,
-                    obscureText: true,
-                    validator: (value) {
-                      // capital letter, small letter, number, special character, and length 8
-                      if(value == null || value.isEmpty) {
-                        return "Please enter your password";
-                      }
-          
-                      else if (value != _passwordController.text) {
-                        return "Passwords must match";
-                      }
-          
-                      else {
-                        return null;
-                      }
-                    }
-                  ),
-        
+                  
                   Row(
                     children: [
-        
-                      Text("Already have an account?  ", style: AppTextStyles.bodyLg),
+            
+                      Text("Don't have an account?  ", style: AppTextStyles.bodyLg),
                       GestureDetector(
                         onTap: () {
-                          context.go("/login");
+                          context.go("/register");
                         },
-                        child: Text("Log in", style: AppTextStyles.bodySm),
+                        child: Text("Register Now", style: AppTextStyles.bodySm),
                       ),
                     ],
                   ),
-        
-                  
+            
                   Padding(
                     padding: EdgeInsetsGeometry.symmetric(vertical: 5),
                     child: ref.watch(loadingProvider)? CircularProgressIndicator(): null
                   ),
-        
+              
                   CustomPrimaryButton(
                     onPressed: () async {
                       if(_formKey.currentState!.validate()) {
-
                         // enhance the logic
                         ref.read(loadingProvider.notifier).setLoading(true);
-
                         // **************************************************
                         // auth handling
                         // **************************************************
-                        await ref.read(authProvider.notifier).signup(_nameController.text, _emailController.text, _passwordController.text);
+                        await ref.read(authProvider.notifier).login(_emailController.text, _passwordController.text);
                         if (!context.mounted) return;
                         context.go("/"); 
                       }
                     }, 
-                  text: "Register")
+                  text: "Login"
+                  )
                 ],
               ),
-            )
-          ),
+            ),
+          )
         ),
       ),
       
