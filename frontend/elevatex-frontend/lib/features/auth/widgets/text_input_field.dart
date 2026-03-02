@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 class ElevateTextField extends StatelessWidget {
+  final String label;
   final String hintText;
   final bool obscureText;
   final TextEditingController textEditingController;
@@ -13,6 +14,7 @@ class ElevateTextField extends StatelessWidget {
 
   const ElevateTextField({
     super.key,
+    required this.label,
     required this.hintText,
     required this.textEditingController,
     required this.textInputAction,
@@ -25,35 +27,44 @@ class ElevateTextField extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsetsGeometry.symmetric(vertical: 10),
-      child: TextFormField(
-        controller: textEditingController,
-        decoration: InputDecoration(
-          filled: true,
-          labelStyle: AppTextStyles.label,
-          hintText: hintText,
-          hintStyle: AppTextStyles.label,
-      
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide.none,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsetsGeometry.directional(bottom: 5),
+            child: Text(label, style: AppTextStyles.bodyLg),
           ),
-      
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 8,
-            vertical: 16
+          TextFormField(
+            controller: textEditingController,
+            decoration: InputDecoration(
+              filled: true,
+              labelStyle: AppTextStyles.label,
+              hintText: hintText,
+              hintStyle: AppTextStyles.label,
+          
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide.none,
+              ),
+          
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 8,
+                vertical: 16
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: AppColors.border, width: 3),
+                borderRadius: BorderRadius.circular(10)
+              )
+            ),
+            obscureText: obscureText,
+            keyboardType: textInputType,
+            textInputAction: textInputAction,
+            onTapOutside: (event) {
+              FocusManager.instance.primaryFocus?.unfocus();
+            },
+            validator: validator
           ),
-          focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: AppColors.border, width: 3),
-            borderRadius: BorderRadius.circular(10)
-          )
-        ),
-        obscureText: obscureText,
-        keyboardType: textInputType,
-        textInputAction: textInputAction,
-        onTapOutside: (event) {
-          FocusManager.instance.primaryFocus?.unfocus();
-        },
-        validator: validator
+        ],
       ),
     );
     

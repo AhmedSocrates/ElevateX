@@ -59,6 +59,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ),
                   ),
                   ElevateTextField(
+                    label: "Email",
                     hintText: "example@test.com",
                     textEditingController: _emailController, 
                     textInputAction: TextInputAction.next, 
@@ -80,6 +81,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   ),
             
                   ElevateTextField(
+                    label: "Password",
                     hintText: "Passowrd1@12",
                     textEditingController: _passwordController, 
                     textInputAction: TextInputAction.done,
