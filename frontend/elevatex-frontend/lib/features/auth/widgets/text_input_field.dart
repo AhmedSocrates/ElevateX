@@ -1,3 +1,4 @@
+import 'package:elevatex/core/theme/app_colors.dart';
 import 'package:elevatex/core/theme/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -33,13 +34,17 @@ class ElevateTextField extends StatelessWidget {
           hintStyle: AppTextStyles.label,
       
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(40),
+            borderRadius: BorderRadius.circular(10),
             borderSide: BorderSide.none,
           ),
       
           contentPadding: const EdgeInsets.symmetric(
             horizontal: 8,
             vertical: 16
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: AppColors.border, width: 3),
+            borderRadius: BorderRadius.circular(10)
           )
         ),
         obscureText: obscureText,
