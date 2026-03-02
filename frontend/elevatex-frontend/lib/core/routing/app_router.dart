@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../career_path/providers/roadmap_provider.dart';
 import '../../features/dashboard/screens/dashboard_screen.dart';
 import '../../features/auth/screens/profile_screen.dart';
 import '../../features/ai_mentor/screens/ai_mentor_screen.dart';
@@ -7,6 +8,7 @@ import '../../features/career_path/screens/career_path_screen.dart';
 import '../../features/social/screens/guilds_screen.dart';
 import '../../features/career_path/screens/frontend_roadmap_screen.dart';
 import '../../features/quests/screens/quiz_screen.dart';
+import '../../features/quests/screens/frontend_quest_screen.dart';
 import '../../features/battles/screens/battles_screen.dart';
 import '../../features/progress/screens/progress_screen.dart';
 
