@@ -24,7 +24,7 @@ class AppTheme {
         bodyMedium: AppTextStyles.bodyMd,
         bodySmall: AppTextStyles.bodySm,
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: AppColors.surface,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
