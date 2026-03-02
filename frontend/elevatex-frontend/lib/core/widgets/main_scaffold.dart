@@ -18,6 +18,8 @@ class MainScaffold extends StatelessWidget {
       bottomNavigationBar: _CustomBottomNavigationBar(
         navigationShell: navigationShell,
       ),
+
+      floatingActionButton: AiMentorFAB(),
     );
   }
 }
@@ -162,5 +164,23 @@ class _NavBarItem extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+
+
+// floating action button to navigate to the mentor page
+class AiMentorFAB extends StatelessWidget {
+  const AiMentorFAB({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return FloatingActionButton(
+        backgroundColor: AppColors.surfaceLight,
+        onPressed: () {
+          context.push('/dashboard/mentor'); 
+        },
+        child: const Icon(Icons.auto_awesome, color: AppColors.accentGold), // Magic/AI icon
+      );
   }
 }

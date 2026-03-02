@@ -42,7 +42,26 @@ class AppRouter {
                 routes: [
                   GoRoute(
                     path: 'mentor',
-                    builder: (context, state) => const AiMentorScreen(),
+                    parentNavigatorKey: _rootNavigatorKey,
+
+                    // adding animation to the transition of the AI mentor page
+                    // there are multiple transitions you can explore within CustomTransitionPage
+                    pageBuilder: (context, state) {
+                      return CustomTransitionPage(
+                        key: state.pageKey,
+                        child: const AiMentorScreen(),
+                        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                          const begin = Offset(0.0, 1.0);
+                          const end = Offset.zero; 
+                          final tween = Tween(begin: begin, end: end).chain(CurveTween(curve: Curves.easeOutCubic));
+                          
+                          return SlideTransition(
+                            position: animation.drive(tween),
+                            child: child,
+                          );
+                        },
+                      );
+                    },
                   ),
                   GoRoute(
                     path: 'profile',
