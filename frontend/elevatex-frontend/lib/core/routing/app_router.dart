@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../features/career_path/providers/roadmap_provider.dart';
 import '../../features/auth/screens/login_screen.dart';
 import '../../features/auth/screens/register_screen.dart';
 import '../../features/dashboard/screens/dashboard_screen.dart';
@@ -7,6 +8,8 @@ import '../../features/auth/screens/profile_screen.dart';
 import '../../features/ai_mentor/screens/ai_mentor_screen.dart';
 import '../../features/career_path/screens/career_path_screen.dart';
 import '../../features/social/screens/guilds_screen.dart';
+import '../../features/career_path/screens/frontend_roadmap_screen.dart';
+import '../../features/quests/screens/quiz_screen.dart';
 import '../../features/quests/screens/frontend_quest_screen.dart';
 import '../../features/battles/screens/battles_screen.dart';
 import '../../features/progress/screens/progress_screen.dart';
@@ -64,6 +67,18 @@ class AppRouter {
               GoRoute(
                 path: '/career',
                 builder: (context, state) => const CareerPathSelectionScreen(),
+                routes: [
+                  GoRoute(
+                    path: 'frontend',
+                    builder: (context, state) => const FrontendRoadmapScreen(),
+                    routes: [
+                      GoRoute(
+                        path: 'quiz',
+                        builder: (context, state) => const QuizScreen(),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ],
           ),
