@@ -21,6 +21,11 @@ class DashboardScreen extends ConsumerWidget {
     return authState.when(
       data: (user) {
         if (user == null) {
+
+          // redirect the unauthenticated user to the login route
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+          context.go("/login"); 
+          });
           return Scaffold(
             body: Center(
               child: ElevatedButton(
