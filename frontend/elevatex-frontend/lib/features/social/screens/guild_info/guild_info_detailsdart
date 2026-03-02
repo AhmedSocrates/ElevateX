@@ -1,0 +1,109 @@
+import 'package:elevatex/core/theme/app_colors.dart';
+import 'package:elevatex/features/social/models/guild_member.dart';
+import 'package:elevatex/features/social/screens/guild_info/info_card.dart';
+import 'package:elevatex/shared/widgets/custom_primary_button.dart';
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+
+class GuildInfoDetailsView extends StatelessWidget {
+  const GuildInfoDetailsView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final members = <GuildMember>[
+      const GuildMember(name: 'MagicDev', role: 'Leader'),
+      const GuildMember(name: 'DragonCoder', role: 'Co-Leader'),
+      const GuildMember(name: 'CodeWizard', role: 'Member'),
+      const GuildMember(name: 'ApprenticeWizard', role: 'Member'),
+    ];
+
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: ListView(
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: const BoxDecoration(
+                  color: AppColors.surface,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.arrow_back, color: Colors.white),
+              ),
+              const SizedBox(width: 12),
+              const Text(
+                'Wizard Guild',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 22,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          const InfoCard(
+            title: 'About Wizard Guild',
+            child: Text(
+              'This guild contains passionate tech learners from around the world. '
+              'It is specialized mainly in frontend activities.',
+              style: TextStyle(color: Colors.white, fontSize: 14, height: 1.6),
+            ),
+          ),
+          const SizedBox(height: 16),
+          const InfoCard(
+            title: 'Ranking',
+            child: Text(
+              '#100 globally in frontend missions and quests',
+              style: TextStyle(color: Colors.white, fontSize: 14, height: 1.6),
+            ),
+          ),
+          const SizedBox(height: 16),
+          InfoCard(
+            title: 'Members',
+            child: ListView.separated(
+              itemCount: members.length,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              separatorBuilder: (_, __) =>
+                  const Divider(color: AppColors.accentGold, height: 20),
+              itemBuilder: (_, index) {
+                final member = members[index];
+                return Text(
+                  '${member.name} - ${member.role}',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    height: 1.6,
+                  ),
+                );
+              },
+            ),
+          ),
+          SizedBox(height: 40),
+          Row(
+            children: [
+              SizedBox(
+                width: 128,
+                child: CustomPrimaryButton(
+                  text: 'Guild Chat',
+                  onPressed: () => context.push('/social/chat'),
+                ),
+              ),
+              const Spacer(),
+              SizedBox(
+                width: 128,
+                child: CustomPrimaryButton(
+                  text: 'Guilds Ranking',
+                  onPressed: () => context.push('/social/ranking'),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}

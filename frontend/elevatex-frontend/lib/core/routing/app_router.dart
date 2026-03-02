@@ -7,7 +7,9 @@ import '../../features/dashboard/screens/dashboard_screen.dart';
 import '../../features/auth/screens/profile_screen.dart';
 import '../../features/ai_mentor/screens/ai_mentor_screen.dart';
 import '../../features/career_path/screens/career_path_screen.dart';
-import '../../features/social/screens/guilds_screen.dart';
+import '../../features/social/screens/guild_chat/guild_chat_screen.dart';
+import '../../features/social/screens/guild_info/guild_info_screen.dart';
+import '../../features/social/screens/guild_ranking/guild_ranking_screen.dart';
 import '../../features/career_path/screens/frontend_roadmap_screen.dart';
 import '../../features/quests/screens/quiz_screen.dart';
 import '../../features/quests/screens/frontend_quest_screen.dart';
@@ -18,10 +20,18 @@ import '../widgets/main_scaffold.dart';
 
 class AppRouter {
   static final _rootNavigatorKey = GlobalKey<NavigatorState>();
-  static final _shellNavigatorHomeKey = GlobalKey<NavigatorState>(debugLabel: 'home');
-  static final _shellNavigatorRoadmapKey = GlobalKey<NavigatorState>(debugLabel: 'roadmap');
-  static final _shellNavigatorMissionsKey = GlobalKey<NavigatorState>(debugLabel: 'missions');
-  static final _shellNavigatorGuildKey = GlobalKey<NavigatorState>(debugLabel: 'guild');
+  static final _shellNavigatorHomeKey = GlobalKey<NavigatorState>(
+    debugLabel: 'home',
+  );
+  static final _shellNavigatorRoadmapKey = GlobalKey<NavigatorState>(
+    debugLabel: 'roadmap',
+  );
+  static final _shellNavigatorMissionsKey = GlobalKey<NavigatorState>(
+    debugLabel: 'missions',
+  );
+  static final _shellNavigatorGuildKey = GlobalKey<NavigatorState>(
+    debugLabel: 'guild',
+  );
 
   static final GoRouter router = GoRouter(
     initialLocation: '/dashboard',
@@ -50,16 +60,20 @@ class AppRouter {
                       return CustomTransitionPage(
                         key: state.pageKey,
                         child: const AiMentorScreen(),
-                        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                          const begin = Offset(0.0, 1.0);
-                          const end = Offset.zero; 
-                          final tween = Tween(begin: begin, end: end).chain(CurveTween(curve: Curves.easeOutCubic));
-                          
-                          return SlideTransition(
-                            position: animation.drive(tween),
-                            child: child,
-                          );
-                        },
+                        transitionsBuilder:
+                            (context, animation, secondaryAnimation, child) {
+                              const begin = Offset(0.0, 1.0);
+                              const end = Offset.zero;
+                              final tween = Tween(
+                                begin: begin,
+                                end: end,
+                              ).chain(CurveTween(curve: Curves.easeOutCubic));
+
+                              return SlideTransition(
+                                position: animation.drive(tween),
+                                child: child,
+                              );
+                            },
                       );
                     },
                   ),
@@ -117,20 +131,24 @@ class AppRouter {
             routes: [
               GoRoute(
                 path: '/social',
-                builder: (context, state) => const GuildsScreen(),
+                builder: (context, state) => const GuildInfoScreen(),
+                routes: [
+                  GoRoute(
+                    path: 'chat',
+                    builder: (context, state) => const GuildChatScreen(),
+                  ),
+                  GoRoute(
+                    path: 'ranking',
+                    builder: (context, state) => const GuildRankingScreen(),
+                  ),
+                ],
               ),
             ],
           ),
         ],
       ),
-      GoRoute(
-        path: '/',
-        redirect: (context, state) => '/dashboard',
-      ),
-      GoRoute(
-        path: '/login',
-        builder: (context, state) => const LoginScreen(),
-      ),
+      GoRoute(path: '/', redirect: (context, state) => '/dashboard'),
+      GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
       GoRoute(
         path: '/register',
         builder: (context, state) => const RegisterScreen(),
@@ -138,4 +156,3 @@ class AppRouter {
     ],
   );
 }
-
