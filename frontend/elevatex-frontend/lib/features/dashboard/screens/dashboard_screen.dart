@@ -24,7 +24,8 @@ class DashboardScreen extends ConsumerWidget {
           return Scaffold(
             body: Center(
               child: ElevatedButton(
-                onPressed: () => ref.read(authProvider.notifier).login('test@example.com', 'password'),
+                onPressed: () => context.go("/login"),
+                // onPressed: () => ref.read(authProvider.notifier).login('test@example.com', 'password'),
                 child: const Text('Login to Magic Guild'),
               ),
             ),
