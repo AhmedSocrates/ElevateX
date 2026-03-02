@@ -38,19 +38,19 @@ class DashboardScreen extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildHeader(user),
+                  _buildHeader(user, context),
                   const SizedBox(height: 24),
                   _buildStreakCard(user.currentStreak),
                   const SizedBox(height: 24),
                   _buildLevelProgressCard(progress),
                   const SizedBox(height: 24),
-                  _buildSectionHeader('Daily Quests', onSeeAll: () {}),
+                  _buildSectionHeader('Daily Quests', context, onSeeAll: () => context.go('/quests')),
                   const SizedBox(height: 12),
-                  _buildQuestCard(),
+                  _buildQuestCard(context),
                   const SizedBox(height: 24),
-                  _buildSectionHeader('Your Career Path', onSeeAll: () {}),
+                  _buildSectionHeader('Your Career Path', context, onSeeAll: () => context.go('/career')),
                   const SizedBox(height: 12),
-                  _buildCareerPathCard(),
+                  _buildCareerPathCard(context),
                   const SizedBox(height: 24),
                   _buildSectionHeader('Magic Streak'),
                   const SizedBox(height: 12),
@@ -75,7 +75,7 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildHeader(UserModel user) {
+  Widget _buildHeader(UserModel user, BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -86,7 +86,9 @@ class DashboardScreen extends ConsumerWidget {
             Text(user.name, style: AppTextStyles.bodyMd),
           ],
         ),
-        Container(
+        GestureDetector(
+          onTap: () => context.go('/dashboard/profile'),
+          child: Container(
           width: 64,
           height: 64,
           decoration: BoxDecoration(
@@ -96,7 +98,7 @@ class DashboardScreen extends ConsumerWidget {
               BoxShadow(
                 color: AppColors.primary.withOpacity(0.5),
                 blurRadius: 15,
-              )
+              ),
             ],
             image: const DecorationImage(
               image: NetworkImage("https://placehold.co/64x64"),
@@ -104,7 +106,8 @@ class DashboardScreen extends ConsumerWidget {
             ),
           ),
         ),
-      ],
+    ),
+    ],
     );
   }
 
@@ -194,7 +197,7 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildSectionHeader(String title, {VoidCallback? onSeeAll}) {
+  Widget _buildSectionHeader(String title, BuildContext context, {VoidCallback? onSeeAll}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -217,7 +220,7 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildQuestCard() {
+  Widget _buildQuestCard(BuildContext context) {
     return CustomSurfaceCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -243,7 +246,7 @@ class DashboardScreen extends ConsumerWidget {
             width: 150,
             child: CustomPrimaryButton(
               text: 'Continue Quest',
-              onPressed: () {},
+              onPressed: () => context.go('/quests'),
             ),
           ),
         ],
@@ -251,33 +254,37 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildCareerPathCard() {
-    return CustomSurfaceCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('Frontend Developer', style: AppTextStyles.bodyLg.copyWith(fontWeight: FontWeight.w700)),
-          const SizedBox(height: 4),
-          Text('Level 3 of 12 completed', style: AppTextStyles.bodySm),
-          const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text('Progress', style: AppTextStyles.label.copyWith(color: AppColors.white)),
-              Text('25%', style: AppTextStyles.label.copyWith(color: AppColors.white)),
-            ],
-          ),
-          const SizedBox(height: 8),
-          const XpProgressBar(progress: 0.25),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              const Icon(Icons.auto_awesome, color: AppColors.white, size: 16),
-              const SizedBox(width: 8),
-              Text('Next skill: React Mastery', style: AppTextStyles.bodySm.copyWith(color: AppColors.white)),
-            ],
-          ),
-        ],
+  Widget _buildCareerPathCard(BuildContext context) {
+    return InkWell(
+      onTap: () => context.go('/career'),
+      borderRadius: BorderRadius.circular(16),
+      child: CustomSurfaceCard(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Frontend Developer', style: AppTextStyles.bodyLg.copyWith(fontWeight: FontWeight.w700)),
+            const SizedBox(height: 4),
+            Text('Level 3 of 12 completed', style: AppTextStyles.bodySm),
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Progress', style: AppTextStyles.label.copyWith(color: AppColors.white)),
+                Text('25%', style: AppTextStyles.label.copyWith(color: AppColors.white)),
+              ],
+            ),
+            const SizedBox(height: 8),
+            const XpProgressBar(progress: 0.25),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                const Icon(Icons.auto_awesome, color: AppColors.white, size: 16),
+                const SizedBox(width: 8),
+                Text('Next skill: React Mastery', style: AppTextStyles.bodySm.copyWith(color: AppColors.white)),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
