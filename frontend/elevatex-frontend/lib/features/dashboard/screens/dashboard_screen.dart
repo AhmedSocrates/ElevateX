@@ -52,7 +52,7 @@ class DashboardScreen extends ConsumerWidget {
                   const SizedBox(height: 12),
                   _buildCareerPathCard(context),
                   const SizedBox(height: 24),
-                  _buildSectionHeader('Magic Streak'),
+                  _buildSectionHeader('Magic Streak', context),
                   const SizedBox(height: 12),
                   _buildMagicStreakCalendar(),
                   const SizedBox(height: 100),
