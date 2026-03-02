@@ -21,6 +21,11 @@ class DashboardScreen extends ConsumerWidget {
     return authState.when(
       data: (user) {
         if (user == null) {
+
+          // redirect the unauthenticated user to the login route
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+          context.go("/login"); 
+          });
           return Scaffold(
             body: Center(
               child: ElevatedButton(
@@ -52,7 +57,7 @@ class DashboardScreen extends ConsumerWidget {
                   const SizedBox(height: 12),
                   _buildCareerPathCard(context),
                   const SizedBox(height: 24),
-                  _buildSectionHeader('Magic Streak'),
+                  _buildSectionHeader('Magic Streak', context),
                   const SizedBox(height: 12),
                   _buildMagicStreakCalendar(),
                   const SizedBox(height: 100),

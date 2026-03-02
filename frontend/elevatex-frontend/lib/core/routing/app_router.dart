@@ -104,6 +104,18 @@ class AppRouter {
           ),
         ],
       ),
+      GoRoute(
+        path: '/',
+        redirect: (context, state) => '/dashboard',
+      ),
+      GoRoute(
+        path: '/login',
+        builder: (context, state) => const LoginScreen(),
+      ),
+      GoRoute(
+        path: '/register',
+        builder: (context, state) => const RegisterScreen(),
+      ),
     ],
   );
 }

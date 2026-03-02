@@ -61,6 +61,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     
                   ),
                   ElevateTextField(
+                    label: "Username",
                     textEditingController: _nameController, 
                     hintText: "username",
                     textInputAction: TextInputAction.next, 
@@ -76,6 +77,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   ),
         
                   ElevateTextField(
+                    label: "Email",
                     textEditingController: _emailController, 
                     hintText: "example@Test.com",
                     textInputAction: TextInputAction.next, 
@@ -97,6 +99,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   ),
         
                   ElevateTextField(
+                    label: "Password",
                     hintText: "passowrd",
                     textEditingController: _passwordController, 
                     textInputAction: TextInputAction.next,
@@ -120,6 +123,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   ),
         
                   ElevateTextField(
+                    label: "Confirm Password",
                     hintText: "confirm passowrd",
                     textEditingController: _confirmPasswordController, 
                     textInputAction: TextInputAction.done,
