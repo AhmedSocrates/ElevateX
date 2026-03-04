@@ -44,7 +44,7 @@ class DashboardScreen extends ConsumerWidget {
                   const SizedBox(height: 24),
                   _buildLevelProgressCard(progress),
                   const SizedBox(height: 24),
-                  _buildSectionHeader('Daily Quests', context, onSeeAll: () => context.go('/quests')),
+                  _buildSectionHeader('Daily Quests', context, onSeeAll: () => context.go('/missions')),
                   const SizedBox(height: 12),
                   _buildQuestCard(context),
                   const SizedBox(height: 24),
@@ -246,7 +246,7 @@ class DashboardScreen extends ConsumerWidget {
             width: 150,
             child: CustomPrimaryButton(
               text: 'Continue Quest',
-              onPressed: () => context.go('/quests'),
+              onPressed: () => context.go('/missions'),
             ),
           ),
         ],
