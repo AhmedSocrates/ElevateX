@@ -9,6 +9,7 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../../shared/widgets/custom_surface_card.dart';
 import '../../../shared/widgets/xp_progress_bar.dart';
 import '../../../shared/widgets/custom_primary_button.dart';
+import '../../profile/widgets/profile_menu_bottom_sheet.dart';
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
@@ -87,7 +88,11 @@ class DashboardScreen extends ConsumerWidget {
           ],
         ),
         GestureDetector(
-          onTap: () => context.go('/dashboard/profile'),
+          onTap: () => ProfileMenuBottomSheet.show(
+            context,
+            userName: user.name,
+            level: user.level,
+          ),
           child: Container(
           width: 64,
           height: 64,
