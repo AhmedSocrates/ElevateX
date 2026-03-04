@@ -17,6 +17,8 @@ import '../../features/battles/screens/battles_screen.dart';
 import '../../features/progress/screens/progress_screen.dart';
 import '../../features/missions/screens/missions_screen.dart';
 import '../../features/missions/screens/mission_solve_screen.dart';
+import '../../features/settings/screens/settings_screen.dart';
+import '../../features/store/screens/store_screen.dart';
 
 import '../widgets/main_scaffold.dart';
 
@@ -164,6 +166,14 @@ class AppRouter {
       GoRoute(
         path: '/register',
         builder: (context, state) => const RegisterScreen(),
+      ),
+      GoRoute(
+        path: '/settings',
+        builder: (context, state) => const SettingsScreen(),
+      ),
+      GoRoute(
+        path: '/store',
+        builder: (context, state) => const StoreScreen(),
       ),
     ],
   );
