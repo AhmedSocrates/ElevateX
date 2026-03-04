@@ -1,2903 +1,567 @@
-Container(
-    width: 394,
-    height: 852,
-    child: Stack(
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_text_styles.dart';
+import '../../../shared/widgets/custom_surface_card.dart';
+import '../providers/mission_provider.dart';
+import '../models/mission_model.dart';
+
+class MissionsScreen extends ConsumerStatefulWidget {
+  const MissionsScreen({super.key});
+
+  @override
+  ConsumerState<MissionsScreen> createState() => _MissionsScreenState();
+}
+
+class _MissionsScreenState extends ConsumerState<MissionsScreen>
+    with SingleTickerProviderStateMixin {
+  String _selectedFilter = 'All';
+  late AnimationController _shimmerController;
+
+  final List<String> _filters = [
+    'All',
+    'Frontend',
+    'Bug Fix',
+    'Refactor',
+    'Algorithm',
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _shimmerController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _shimmerController.dispose();
+    super.dispose();
+  }
+
+  Color _getTypeColor(String type) {
+    switch (type) {
+      case 'Frontend':
+        return AppColors.primary;
+      case 'Bug Fix':
+        return AppColors.accentOrange;
+      case 'Refactor':
+        return const Color(0xFF57CFFF);
+      case 'Algorithm':
+        return AppColors.accentGold;
+      default:
+        return AppColors.primary;
+    }
+  }
+
+  IconData _getTypeIcon(String type) {
+    switch (type) {
+      case 'Frontend':
+        return Icons.web_rounded;
+      case 'Bug Fix':
+        return Icons.bug_report_rounded;
+      case 'Refactor':
+        return Icons.auto_fix_high_rounded;
+      case 'Algorithm':
+        return Icons.data_array_rounded;
+      default:
+        return Icons.code_rounded;
+    }
+  }
+
+  IconData _getDifficultyIcon(String difficulty) {
+    switch (difficulty) {
+      case 'Easy':
+        return Icons.signal_cellular_alt_1_bar_rounded;
+      case 'Medium':
+        return Icons.signal_cellular_alt_2_bar_rounded;
+      case 'Hard':
+        return Icons.signal_cellular_alt_rounded;
+      default:
+        return Icons.signal_cellular_alt_2_bar_rounded;
+    }
+  }
+
+  Color _getDifficultyColor(String difficulty) {
+    switch (difficulty) {
+      case 'Easy':
+        return const Color(0xFF57FF8E);
+      case 'Medium':
+        return AppColors.accentGold;
+      case 'Hard':
+        return AppColors.accentOrange;
+      default:
+        return AppColors.accentGold;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final missionsState = ref.watch(missionProvider);
+
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildHeader(),
+            const SizedBox(height: 16),
+            _buildFilterChips(),
+            const SizedBox(height: 8),
+            Expanded(
+              child: missionsState.when(
+                data: (missions) {
+                  final filtered = _selectedFilter == 'All'
+                      ? missions
+                      : missions
+                          .where((m) => m.type == _selectedFilter)
+                          .toList();
+                  return _buildMissionList(filtered);
+                },
+                loading: () => _buildLoadingShimmer(),
+                error: (err, stack) => Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.error_outline,
+                          color: AppColors.accentOrange, size: 48),
+                      const SizedBox(height: 12),
+                      Text('Failed to load missions',
+                          style: AppTextStyles.bodyMd),
+                      const SizedBox(height: 8),
+                      TextButton(
+                        onPressed: () =>
+                            ref.invalidate(missionProvider),
+                        child: Text('Retry',
+                            style: AppTextStyles.bodyMd
+                                .copyWith(color: AppColors.primary)),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeader() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 16, left: 16, right: 16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-            Positioned(
-                left: 0,
-                top: 0,
-                child: Container(
-                    width: 394,
-                    padding: const EdgeInsets.only(bottom: 128),
-                    decoration: BoxDecoration(color: const Color(0xFF1A103C)),
-                    child: Stack(
-                        children: [
-                            Container(
-                                width: double.infinity,
-                                padding: const EdgeInsets.only(
-                                    top: 56,
-                                    left: 16,
-                                    right: 16,
-                                    bottom: 48,
-                                ),
-                                decoration: BoxDecoration(color: const Color(0xFF1A103C)),
-                                child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    spacing: 24,
-                                    children: [
-                                        Container(
-                                            width: double.infinity,
-                                            child: Row(
-                                                mainAxisSize: MainAxisSize.min,
-                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                crossAxisAlignment: CrossAxisAlignment.center,
-                                                spacing: 54,
-                                                children: [
-                                                    Row(
-                                                        mainAxisSize: MainAxisSize.min,
-                                                        mainAxisAlignment: MainAxisAlignment.start,
-                                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                                        spacing: 12,
-                                                        children: [
-                                                            Container(
-                                                                width: 48,
-                                                                height: 48,
-                                                                decoration: ShapeDecoration(
-                                                                    color: const Color(0xFF2D1B58),
-                                                                    shape: RoundedRectangleBorder(
-                                                                        borderRadius: BorderRadius.circular(9999),
-                                                                    ),
-                                                                ),
-                                                                child: Stack(
-                                                                    children: [
-                                                                        Positioned(
-                                                                            left: 13,
-                                                                            top: 13,
-                                                                            child: Container(
-                                                                                width: 22,
-                                                                                height: 22,
-                                                                                clipBehavior: Clip.antiAlias,
-                                                                                decoration: BoxDecoration(),
-                                                                                child: Stack(),
-                                                                            ),
-                                                                        ),
-                                                                    ],
-                                                                ),
-                                                            ),
-                                                            Container(
-                                                                width: 176.25,
-                                                                height: 52,
-                                                                child: Stack(
-                                                                    children: [
-                                                                        Positioned(
-                                                                            left: 0,
-                                                                            top: 0,
-                                                                            child: Container(
-                                                                                width: 176.25,
-                                                                                height: 32,
-                                                                                child: Stack(
-                                                                                    children: [
-                                                                                        Positioned(
-                                                                                            left: 0,
-                                                                                            top: 0,
-                                                                                            child: SizedBox(
-                                                                                                width: 150.10,
-                                                                                                height: 32,
-                                                                                                child: Text(
-                                                                                                    'Epic Missions',
-                                                                                                    style: TextStyle(
-                                                                                                        color: Colors.white,
-                                                                                                        fontSize: 20.40,
-                                                                                                        fontFamily: 'Inter',
-                                                                                                        fontWeight: FontWeight.w700,
-                                                                                                        height: 1.57,
-                                                                                                    ),
-                                                                                                ),
-                                                                                            ),
-                                                                                        ),
-                                                                                    ],
-                                                                                ),
-                                                                            ),
-                                                                        ),
-                                                                        Positioned(
-                                                                            left: 0,
-                                                                            top: 32,
-                                                                            child: Container(
-                                                                                width: 176.25,
-                                                                                height: 20,
-                                                                                child: Stack(
-                                                                                    children: [
-                                                                                        Positioned(
-                                                                                            left: 0,
-                                                                                            top: 0.80,
-                                                                                            child: SizedBox(
-                                                                                                width: 176.25,
-                                                                                                height: 18.40,
-                                                                                                child: Text(
-                                                                                                    'Advanced coding challenges',
-                                                                                                    style: TextStyle(
-                                                                                                        color: const Color(0xFFA79BD1),
-                                                                                                        fontSize: 11.90,
-                                                                                                        fontFamily: 'Inter',
-                                                                                                        fontWeight: FontWeight.w400,
-                                                                                                        height: 1.68,
-                                                                                                    ),
-                                                                                                ),
-                                                                                            ),
-                                                                                        ),
-                                                                                    ],
-                                                                                ),
-                                                                            ),
-                                                                        ),
-                                                                    ],
-                                                                ),
-                                                            ),
-                                                        ],
-                                                    ),
-                                                    Container(
-                                                        padding: const EdgeInsets.all(13),
-                                                        decoration: ShapeDecoration(
-                                                            color: const Color(0xFF2D1B58),
-                                                            shape: RoundedRectangleBorder(
-                                                                borderRadius: BorderRadius.circular(9999),
-                                                            ),
-                                                        ),
-                                                        child: Row(
-                                                            mainAxisSize: MainAxisSize.min,
-                                                            mainAxisAlignment: MainAxisAlignment.start,
-                                                            crossAxisAlignment: CrossAxisAlignment.center,
-                                                            spacing: 10,
-                                                            children: [
-                                                                Container(
-                                                                    width: 22,
-                                                                    height: 22,
-                                                                    clipBehavior: Clip.antiAlias,
-                                                                    decoration: BoxDecoration(),
-                                                                    child: Stack(),
-                                                                ),
-                                                            ],
-                                                        ),
-                                                    ),
-                                                ],
-                                            ),
-                                        ),
-                                        Container(
-                                            width: double.infinity,
-                                            child: Row(
-                                                mainAxisSize: MainAxisSize.min,
-                                                mainAxisAlignment: MainAxisAlignment.start,
-                                                crossAxisAlignment: CrossAxisAlignment.center,
-                                                spacing: 8,
-                                                children: [
-                                                    Container(
-                                                        width: 53.28,
-                                                        height: 43.20,
-                                                        decoration: ShapeDecoration(
-                                                            color: const Color(0xFF3D2A6E),
-                                                            shape: RoundedRectangleBorder(
-                                                                side: BorderSide(
-                                                                    width: 1,
-                                                                    color: const Color(0xFF8E74FF),
-                                                                ),
-                                                                borderRadius: BorderRadius.circular(9999),
-                                                            ),
-                                                        ),
-                                                        child: Stack(
-                                                            children: [
-                                                                Positioned(
-                                                                    left: 17.60,
-                                                                    top: 10.40,
-                                                                    child: SizedBox(
-                                                                        width: 18.07,
-                                                                        height: 21.60,
-                                                                        child: Text(
-                                                                            'All',
-                                                                            textAlign: TextAlign.center,
-                                                                            style: TextStyle(
-                                                                                color: Colors.white,
-                                                                                fontSize: 13.60,
-                                                                                fontFamily: 'Inter',
-                                                                                fontWeight: FontWeight.w400,
-                                                                                height: 1.76,
-                                                                            ),
-                                                                        ),
-                                                                    ),
-                                                                ),
-                                                            ],
-                                                        ),
-                                                    ),
-                                                    Container(
-                                                        width: 99.28,
-                                                        height: 43.20,
-                                                        decoration: ShapeDecoration(
-                                                            color: const Color(0xFF241445),
-                                                            shape: RoundedRectangleBorder(
-                                                                side: BorderSide(
-                                                                    width: 1,
-                                                                    color: Colors.black.withValues(alpha: 0),
-                                                                ),
-                                                                borderRadius: BorderRadius.circular(9999),
-                                                            ),
-                                                        ),
-                                                        child: Stack(
-                                                            children: [
-                                                                Positioned(
-                                                                    left: 17.60,
-                                                                    top: 10.40,
-                                                                    child: SizedBox(
-                                                                        width: 64.07,
-                                                                        height: 21.60,
-                                                                        child: Text(
-                                                                            'Frontend',
-                                                                            textAlign: TextAlign.center,
-                                                                            style: TextStyle(
-                                                                                color: const Color(0xFFA79BD1),
-                                                                                fontSize: 13.60,
-                                                                                fontFamily: 'Inter',
-                                                                                fontWeight: FontWeight.w400,
-                                                                                height: 1.76,
-                                                                            ),
-                                                                        ),
-                                                                    ),
-                                                                ),
-                                                            ],
-                                                        ),
-                                                    ),
-                                                    Container(
-                                                        width: 73.63,
-                                                        height: 43.20,
-                                                        decoration: ShapeDecoration(
-                                                            color: const Color(0xFF241445),
-                                                            shape: RoundedRectangleBorder(
-                                                                side: BorderSide(
-                                                                    width: 1,
-                                                                    color: Colors.black.withValues(alpha: 0),
-                                                                ),
-                                                                borderRadius: BorderRadius.circular(9999),
-                                                            ),
-                                                        ),
-                                                        child: Stack(
-                                                            children: [
-                                                                Positioned(
-                                                                    left: 17.60,
-                                                                    top: 10.40,
-                                                                    child: SizedBox(
-                                                                        width: 38.42,
-                                                                        height: 21.60,
-                                                                        child: Text(
-                                                                            'React',
-                                                                            textAlign: TextAlign.center,
-                                                                            style: TextStyle(
-                                                                                color: const Color(0xFFA79BD1),
-                                                                                fontSize: 13.60,
-                                                                                fontFamily: 'Inter',
-                                                                                fontWeight: FontWeight.w400,
-                                                                                height: 1.76,
-                                                                            ),
-                                                                        ),
-                                                                    ),
-                                                                ),
-                                                            ],
-                                                        ),
-                                                    ),
-                                                    Container(
-                                                        width: 112.69,
-                                                        height: 43.20,
-                                                        decoration: ShapeDecoration(
-                                                            color: const Color(0xFF241445),
-                                                            shape: RoundedRectangleBorder(
-                                                                side: BorderSide(
-                                                                    width: 1,
-                                                                    color: Colors.black.withValues(alpha: 0),
-                                                                ),
-                                                                borderRadius: BorderRadius.circular(9999),
-                                                            ),
-                                                        ),
-                                                        child: Stack(
-                                                            children: [
-                                                                Positioned(
-                                                                    left: 17.60,
-                                                                    top: 10.40,
-                                                                    child: SizedBox(
-                                                                        width: 77.49,
-                                                                        height: 21.60,
-                                                                        child: Text(
-                                                                            'Algorithms',
-                                                                            textAlign: TextAlign.center,
-                                                                            style: TextStyle(
-                                                                                color: const Color(0xFFA79BD1),
-                                                                                fontSize: 13.60,
-                                                                                fontFamily: 'Inter',
-                                                                                fontWeight: FontWeight.w400,
-                                                                                height: 1.76,
-                                                                            ),
-                                                                        ),
-                                                                    ),
-                                                                ),
-                                                            ],
-                                                        ),
-                                                    ),
-                                                ],
-                                            ),
-                                        ),
-                                        Container(
-                                            width: double.infinity,
-                                            child: Column(
-                                                mainAxisSize: MainAxisSize.min,
-                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                crossAxisAlignment: CrossAxisAlignment.center,
-                                                spacing: 20,
-                                                children: [
-                                                    Container(
-                                                        width: double.infinity,
-                                                        clipBehavior: Clip.antiAlias,
-                                                        decoration: ShapeDecoration(
-                                                            color: const Color(0xFF2D1B58),
-                                                            shape: RoundedRectangleBorder(
-                                                                side: BorderSide(color: const Color(0xFF4A3880)),
-                                                                borderRadius: BorderRadius.circular(12),
-                                                            ),
-                                                            shadows: [
-                                                                BoxShadow(
-                                                                    color: Color(0x00000000),
-                                                                    blurRadius: 0,
-                                                                    offset: Offset(0, 0),
-                                                                    spreadRadius: 0,
-                                                                )BoxShadow(
-                                                                    color: Color(0x00000000),
-                                                                    blurRadius: 0,
-                                                                    offset: Offset(0, 0),
-                                                                    spreadRadius: 0,
-                                                                )
-                                                            ],
-                                                        ),
-                                                        child: Column(
-                                                            mainAxisSize: MainAxisSize.min,
-                                                            mainAxisAlignment: MainAxisAlignment.center,
-                                                            crossAxisAlignment: CrossAxisAlignment.center,
-                                                            children: [
-                                                                Container(
-                                                                    width: double.infinity,
-                                                                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-                                                                    decoration: BoxDecoration(
-                                                                        image: DecorationImage(
-                                                                            image: NetworkImage("https://placehold.co/362x234"),
-                                                                            fit: BoxFit.cover,
-                                                                        ),
-                                                                    ),
-                                                                    child: Column(
-                                                                        mainAxisSize: MainAxisSize.min,
-                                                                        mainAxisAlignment: MainAxisAlignment.center,
-                                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                                        spacing: 12,
-                                                                        children: [
-                                                                            Container(
-                                                                                width: double.infinity,
-                                                                                child: Row(
-                                                                                    mainAxisSize: MainAxisSize.min,
-                                                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                                                    spacing: 151,
-                                                                                    children: [
-                                                                                        Container(
-                                                                                            width: 83.65,
-                                                                                            height: 20,
-                                                                                            child: Stack(
-                                                                                                children: [
-                                                                                                    Positioned(
-                                                                                                        left: 0,
-                                                                                                        top: 1,
-                                                                                                        child: Container(
-                                                                                                            width: 18,
-                                                                                                            height: 18,
-                                                                                                            clipBehavior: Clip.antiAlias,
-                                                                                                            decoration: BoxDecoration(),
-                                                                                                            child: Stack(),
-                                                                                                        ),
-                                                                                                    ),
-                                                                                                    Positioned(
-                                                                                                        left: 26,
-                                                                                                        top: 0,
-                                                                                                        child: Container(
-                                                                                                            width: 57.65,
-                                                                                                            height: 20,
-                                                                                                            child: Stack(
-                                                                                                                children: [
-                                                                                                                    Positioned(
-                                                                                                                        left: 0,
-                                                                                                                        top: 0.80,
-                                                                                                                        child: SizedBox(
-                                                                                                                            width: 57.65,
-                                                                                                                            height: 18.40,
-                                                                                                                            child: Text(
-                                                                                                                                'frontend',
-                                                                                                                                style: TextStyle(
-                                                                                                                                    color: const Color(0xFFA79BD1),
-                                                                                                                                    fontSize: 11.90,
-                                                                                                                                    fontFamily: 'Inter',
-                                                                                                                                    fontWeight: FontWeight.w500,
-                                                                                                                                    height: 1.68,
-                                                                                                                                ),
-                                                                                                                            ),
-                                                                                                                        ),
-                                                                                                                    ),
-                                                                                                                ],
-                                                                                                            ),
-                                                                                                        ),
-                                                                                                    ),
-                                                                                                ],
-                                                                                            ),
-                                                                                        ),
-                                                                                        Container(
-                                                                                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                                                                                            decoration: ShapeDecoration(
-                                                                                                color: const Color(0xFFA79BD1),
-                                                                                                shape: RoundedRectangleBorder(
-                                                                                                    borderRadius: BorderRadius.circular(9999),
-                                                                                                ),
-                                                                                            ),
-                                                                                            child: Row(
-                                                                                                mainAxisSize: MainAxisSize.min,
-                                                                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                                                                crossAxisAlignment: CrossAxisAlignment.center,
-                                                                                                spacing: 10,
-                                                                                                children: [
-                                                                                                    Text(
-                                                                                                        'available',
-                                                                                                        style: TextStyle(
-                                                                                                            color: const Color(0xFF4A3880),
-                                                                                                            fontSize: 10.20,
-                                                                                                            fontFamily: 'Inter',
-                                                                                                            fontWeight: FontWeight.w400,
-                                                                                                            height: 1.57,
-                                                                                                        ),
-                                                                                                    ),
-                                                                                                ],
-                                                                                            ),
-                                                                                        ),
-                                                                                    ],
-                                                                                ),
-                                                                            ),
-                                                                            Container(
-                                                                                padding: const EdgeInsets.symmetric(vertical: 1),
-                                                                                child: Row(
-                                                                                    mainAxisSize: MainAxisSize.min,
-                                                                                    mainAxisAlignment: MainAxisAlignment.center,
-                                                                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                                                                    spacing: 10,
-                                                                                    children: [
-                                                                                        Text(
-                                                                                            'The Enchanted Interface',
-                                                                                            style: TextStyle(
-                                                                                                color: Colors.white,
-                                                                                                fontSize: 17,
-                                                                                                fontFamily: 'Inter',
-                                                                                                fontWeight: FontWeight.w700,
-                                                                                                height: 1.65,
-                                                                                            ),
-                                                                                        ),
-                                                                                    ],
-                                                                                ),
-                                                                            ),
-                                                                            Container(
-                                                                                width: 304.80,
-                                                                                padding: const EdgeInsets.symmetric(vertical: 1),
-                                                                                child: Column(
-                                                                                    mainAxisSize: MainAxisSize.min,
-                                                                                    mainAxisAlignment: MainAxisAlignment.start,
-                                                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                                                    spacing: 2,
-                                                                                    children: [
-                                                                                        SizedBox(
-                                                                                            width: 304.80,
-                                                                                            height: 21.60,
-                                                                                            child: Text(
-                                                                                                'Create a magical dashboard using Flexbox ',
-                                                                                                style: TextStyle(
-                                                                                                    color: const Color(0xFFA79BD1),
-                                                                                                    fontSize: 13.60,
-                                                                                                    fontFamily: 'Inter',
-                                                                                                    fontWeight: FontWeight.w400,
-                                                                                                    height: 1.76,
-                                                                                                ),
-                                                                                            ),
-                                                                                        ),
-                                                                                        SizedBox(
-                                                                                            width: 304.80,
-                                                                                            height: 21.60,
-                                                                                            child: Text(
-                                                                                                'spells and Grid enchantments',
-                                                                                                style: TextStyle(
-                                                                                                    color: const Color(0xFFA79BD1),
-                                                                                                    fontSize: 13.60,
-                                                                                                    fontFamily: 'Inter',
-                                                                                                    fontWeight: FontWeight.w400,
-                                                                                                    height: 1.76,
-                                                                                                ),
-                                                                                            ),
-                                                                                        ),
-                                                                                    ],
-                                                                                ),
-                                                                            ),
-                                                                            Row(
-                                                                                mainAxisSize: MainAxisSize.min,
-                                                                                mainAxisAlignment: MainAxisAlignment.start,
-                                                                                crossAxisAlignment: CrossAxisAlignment.center,
-                                                                                spacing: 16,
-                                                                                children: [
-                                                                                    Container(
-                                                                                        width: 70,
-                                                                                        height: 14,
-                                                                                        child: Stack(
-                                                                                            children: [
-                                                                                                Positioned(
-                                                                                                    left: 0,
-                                                                                                    top: 0,
-                                                                                                    child: Container(
-                                                                                                        width: 14,
-                                                                                                        height: 14,
-                                                                                                        clipBehavior: Clip.antiAlias,
-                                                                                                        decoration: BoxDecoration(),
-                                                                                                        child: Stack(),
-                                                                                                    ),
-                                                                                                ),
-                                                                                                Positioned(
-                                                                                                    left: 14,
-                                                                                                    top: 0,
-                                                                                                    child: Container(
-                                                                                                        width: 14,
-                                                                                                        height: 14,
-                                                                                                        clipBehavior: Clip.antiAlias,
-                                                                                                        decoration: BoxDecoration(),
-                                                                                                        child: Stack(),
-                                                                                                    ),
-                                                                                                ),
-                                                                                                Positioned(
-                                                                                                    left: 28,
-                                                                                                    top: 0,
-                                                                                                    child: Container(
-                                                                                                        width: 14,
-                                                                                                        height: 14,
-                                                                                                        clipBehavior: Clip.antiAlias,
-                                                                                                        decoration: BoxDecoration(),
-                                                                                                        child: Stack(),
-                                                                                                    ),
-                                                                                                ),
-                                                                                                Positioned(
-                                                                                                    left: 42,
-                                                                                                    top: 0,
-                                                                                                    child: Container(
-                                                                                                        width: 14,
-                                                                                                        height: 14,
-                                                                                                        clipBehavior: Clip.antiAlias,
-                                                                                                        decoration: BoxDecoration(),
-                                                                                                        child: Stack(),
-                                                                                                    ),
-                                                                                                ),
-                                                                                                Positioned(
-                                                                                                    left: 56,
-                                                                                                    top: 0,
-                                                                                                    child: Container(
-                                                                                                        width: 14,
-                                                                                                        height: 14,
-                                                                                                        clipBehavior: Clip.antiAlias,
-                                                                                                        decoration: BoxDecoration(),
-                                                                                                        child: Stack(),
-                                                                                                    ),
-                                                                                                ),
-                                                                                            ],
-                                                                                        ),
-                                                                                    ),
-                                                                                    Container(
-                                                                                        width: 60.31,
-                                                                                        height: 20,
-                                                                                        child: Stack(
-                                                                                            children: [
-                                                                                                Positioned(
-                                                                                                    left: 0,
-                                                                                                    top: 3,
-                                                                                                    child: Container(
-                                                                                                        width: 14,
-                                                                                                        height: 14,
-                                                                                                        clipBehavior: Clip.antiAlias,
-                                                                                                        decoration: BoxDecoration(),
-                                                                                                        child: Stack(),
-                                                                                                    ),
-                                                                                                ),
-                                                                                                Positioned(
-                                                                                                    left: 18,
-                                                                                                    top: 0,
-                                                                                                    child: Container(
-                                                                                                        width: 42.31,
-                                                                                                        height: 20,
-                                                                                                        child: Stack(
-                                                                                                            children: [
-                                                                                                                Positioned(
-                                                                                                                    left: 0,
-                                                                                                                    top: 0.80,
-                                                                                                                    child: SizedBox(
-                                                                                                                        width: 42.31,
-                                                                                                                        height: 18.40,
-                                                                                                                        child: Text(
-                                                                                                                            '30 min',
-                                                                                                                            style: TextStyle(
-                                                                                                                                color: const Color(0xFFA79BD1),
-                                                                                                                                fontSize: 11.90,
-                                                                                                                                fontFamily: 'Inter',
-                                                                                                                                fontWeight: FontWeight.w400,
-                                                                                                                                height: 1.68,
-                                                                                                                            ),
-                                                                                                                        ),
-                                                                                                                    ),
-                                                                                                                ),
-                                                                                                            ],
-                                                                                                        ),
-                                                                                                    ),
-                                                                                                ),
-                                                                                            ],
-                                                                                        ),
-                                                                                    ),
-                                                                                    Container(
-                                                                                        width: 108.83,
-                                                                                        height: 20,
-                                                                                        child: Stack(
-                                                                                            children: [
-                                                                                                Positioned(
-                                                                                                    left: 0,
-                                                                                                    top: 0.80,
-                                                                                                    child: SizedBox(
-                                                                                                        width: 82.26,
-                                                                                                        height: 18.40,
-                                                                                                        child: Text(
-                                                                                                            'Success rate: ',
-                                                                                                            style: TextStyle(
-                                                                                                                color: const Color(0xFFA79BD1),
-                                                                                                                fontSize: 11.90,
-                                                                                                                fontFamily: 'Inter',
-                                                                                                                fontWeight: FontWeight.w400,
-                                                                                                                height: 1.68,
-                                                                                                            ),
-                                                                                                        ),
-                                                                                                    ),
-                                                                                                ),
-                                                                                                Positioned(
-                                                                                                    left: 82.26,
-                                                                                                    top: 0.80,
-                                                                                                    child: SizedBox(
-                                                                                                        width: 26.56,
-                                                                                                        height: 18.40,
-                                                                                                        child: Text(
-                                                                                                            '78%',
-                                                                                                            style: TextStyle(
-                                                                                                                color: const Color(0xFFA79BD1),
-                                                                                                                fontSize: 11.90,
-                                                                                                                fontFamily: 'Inter',
-                                                                                                                fontWeight: FontWeight.w400,
-                                                                                                                height: 1.68,
-                                                                                                            ),
-                                                                                                        ),
-                                                                                                    ),
-                                                                                                ),
-                                                                                            ],
-                                                                                        ),
-                                                                                    ),
-                                                                                ],
-                                                                            ),
-                                                                            Container(
-                                                                                width: double.infinity,
-                                                                                child: Row(
-                                                                                    mainAxisSize: MainAxisSize.min,
-                                                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                                                                    spacing: 36,
-                                                                                    children: [
-                                                                                        Container(
-                                                                                            width: 153.69,
-                                                                                            height: 28,
-                                                                                            child: Stack(
-                                                                                                children: [
-                                                                                                    Positioned(
-                                                                                                        left: 0,
-                                                                                                        top: 0,
-                                                                                                        child: Container(
-                                                                                                            width: 84.59,
-                                                                                                            height: 28,
-                                                                                                            decoration: ShapeDecoration(
-                                                                                                                color: const Color(0xFF241445),
-                                                                                                                shape: RoundedRectangleBorder(
-                                                                                                                    borderRadius: BorderRadius.circular(9999),
-                                                                                                                ),
-                                                                                                            ),
-                                                                                                            child: Stack(
-                                                                                                                children: [
-                                                                                                                    Positioned(
-                                                                                                                        left: 12,
-                                                                                                                        top: 7,
-                                                                                                                        child: Container(
-                                                                                                                            width: 14,
-                                                                                                                            height: 14,
-                                                                                                                            clipBehavior: Clip.antiAlias,
-                                                                                                                            decoration: BoxDecoration(),
-                                                                                                                            child: Stack(),
-                                                                                                                        ),
-                                                                                                                    ),
-                                                                                                                    Positioned(
-                                                                                                                        left: 30,
-                                                                                                                        top: 4,
-                                                                                                                        child: Container(
-                                                                                                                            width: 42.59,
-                                                                                                                            height: 20,
-                                                                                                                            child: Stack(
-                                                                                                                                children: [
-                                                                                                                                    Positioned(
-                                                                                                                                        left: 0,
-                                                                                                                                        top: 0.80,
-                                                                                                                                        child: SizedBox(
-                                                                                                                                            width: 22.65,
-                                                                                                                                            height: 18.40,
-                                                                                                                                            child: Text(
-                                                                                                                                                '120',
-                                                                                                                                                style: TextStyle(
-                                                                                                                                                    color: Colors.white,
-                                                                                                                                                    fontSize: 11.90,
-                                                                                                                                                    fontFamily: 'Inter',
-                                                                                                                                                    fontWeight: FontWeight.w400,
-                                                                                                                                                    height: 1.68,
-                                                                                                                                                ),
-                                                                                                                                            ),
-                                                                                                                                        ),
-                                                                                                                                    ),
-                                                                                                                                    Positioned(
-                                                                                                                                        left: 22.65,
-                                                                                                                                        top: 0.80,
-                                                                                                                                        child: SizedBox(
-                                                                                                                                            width: 19.94,
-                                                                                                                                            height: 18.40,
-                                                                                                                                            child: Text(
-                                                                                                                                                ' XP',
-                                                                                                                                                style: TextStyle(
-                                                                                                                                                    color: Colors.white,
-                                                                                                                                                    fontSize: 11.90,
-                                                                                                                                                    fontFamily: 'Inter',
-                                                                                                                                                    fontWeight: FontWeight.w400,
-                                                                                                                                                    height: 1.68,
-                                                                                                                                                ),
-                                                                                                                                            ),
-                                                                                                                                        ),
-                                                                                                                                    ),
-                                                                                                                                ],
-                                                                                                                            ),
-                                                                                                                        ),
-                                                                                                                    ),
-                                                                                                                ],
-                                                                                                            ),
-                                                                                                        ),
-                                                                                                    ),
-                                                                                                    Positioned(
-                                                                                                        left: 96.59,
-                                                                                                        top: 0,
-                                                                                                        child: Container(
-                                                                                                            width: 57.10,
-                                                                                                            height: 28,
-                                                                                                            decoration: ShapeDecoration(
-                                                                                                                color: const Color(0xFF241445),
-                                                                                                                shape: RoundedRectangleBorder(
-                                                                                                                    borderRadius: BorderRadius.circular(9999),
-                                                                                                                ),
-                                                                                                            ),
-                                                                                                            child: Stack(
-                                                                                                                children: [
-                                                                                                                    Positioned(
-                                                                                                                        left: 12,
-                                                                                                                        top: 7,
-                                                                                                                        child: Container(
-                                                                                                                            width: 14,
-                                                                                                                            height: 14,
-                                                                                                                            clipBehavior: Clip.antiAlias,
-                                                                                                                            decoration: BoxDecoration(),
-                                                                                                                            child: Stack(),
-                                                                                                                        ),
-                                                                                                                    ),
-                                                                                                                    Positioned(
-                                                                                                                        left: 30,
-                                                                                                                        top: 4,
-                                                                                                                        child: Container(
-                                                                                                                            width: 15.10,
-                                                                                                                            height: 20,
-                                                                                                                            child: Stack(
-                                                                                                                                children: [
-                                                                                                                                    Positioned(
-                                                                                                                                        left: 0,
-                                                                                                                                        top: 0.80,
-                                                                                                                                        child: SizedBox(
-                                                                                                                                            width: 15.10,
-                                                                                                                                            height: 18.40,
-                                                                                                                                            child: Text(
-                                                                                                                                                '75',
-                                                                                                                                                style: TextStyle(
-                                                                                                                                                    color: Colors.white,
-                                                                                                                                                    fontSize: 11.90,
-                                                                                                                                                    fontFamily: 'Inter',
-                                                                                                                                                    fontWeight: FontWeight.w400,
-                                                                                                                                                    height: 1.68,
-                                                                                                                                                ),
-                                                                                                                                            ),
-                                                                                                                                        ),
-                                                                                                                                    ),
-                                                                                                                                ],
-                                                                                                                            ),
-                                                                                                                        ),
-                                                                                                                    ),
-                                                                                                                ],
-                                                                                                            ),
-                                                                                                        ),
-                                                                                                    ),
-                                                                                                ],
-                                                                                            ),
-                                                                                        ),
-                                                                                        Container(
-                                                                                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
-                                                                                            decoration: ShapeDecoration(
-                                                                                                color: const Color(0xFF8E74FF),
-                                                                                                shape: RoundedRectangleBorder(
-                                                                                                    borderRadius: BorderRadius.circular(9999),
-                                                                                                ),
-                                                                                                shadows: [
-                                                                                                    BoxShadow(
-                                                                                                        color: Color(0x00000000),
-                                                                                                        blurRadius: 0,
-                                                                                                        offset: Offset(0, 0),
-                                                                                                        spreadRadius: 0,
-                                                                                                    )BoxShadow(
-                                                                                                        color: Color(0x00000000),
-                                                                                                        blurRadius: 0,
-                                                                                                        offset: Offset(0, 0),
-                                                                                                        spreadRadius: 0,
-                                                                                                    )
-                                                                                                ],
-                                                                                            ),
-                                                                                            child: Row(
-                                                                                                mainAxisSize: MainAxisSize.min,
-                                                                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                                                                crossAxisAlignment: CrossAxisAlignment.center,
-                                                                                                spacing: 10,
-                                                                                                children: [
-                                                                                                    SizedBox(
-                                                                                                        width: 82.94,
-                                                                                                        height: 18.40,
-                                                                                                        child: Text(
-                                                                                                            'Start Mission',
-                                                                                                            textAlign: TextAlign.center,
-                                                                                                            style: TextStyle(
-                                                                                                                color: Colors.white,
-                                                                                                                fontSize: 11.90,
-                                                                                                                fontFamily: 'Inter',
-                                                                                                                fontWeight: FontWeight.w500,
-                                                                                                                height: 1.68,
-                                                                                                            ),
-                                                                                                        ),
-                                                                                                    ),
-                                                                                                ],
-                                                                                            ),
-                                                                                        ),
-                                                                                    ],
-                                                                                ),
-                                                                            ),
-                                                                        ],
-                                                                    ),
-                                                                ),
-                                                            ],
-                                                        ),
-                                                    ),
-                                                    Container(
-                                                        width: double.infinity,
-                                                        padding: const EdgeInsets.all(1),
-                                                        clipBehavior: Clip.antiAlias,
-                                                        decoration: ShapeDecoration(
-                                                            color: const Color(0xFF2D1B58),
-                                                            shape: RoundedRectangleBorder(
-                                                                side: BorderSide(color: const Color(0xFF4A3880)),
-                                                                borderRadius: BorderRadius.circular(12),
-                                                            ),
-                                                            shadows: [
-                                                                BoxShadow(
-                                                                    color: Color(0x00000000),
-                                                                    blurRadius: 0,
-                                                                    offset: Offset(0, 0),
-                                                                    spreadRadius: 0,
-                                                                )BoxShadow(
-                                                                    color: Color(0x00000000),
-                                                                    blurRadius: 0,
-                                                                    offset: Offset(0, 0),
-                                                                    spreadRadius: 0,
-                                                                )
-                                                            ],
-                                                        ),
-                                                        child: Column(
-                                                            mainAxisSize: MainAxisSize.min,
-                                                            mainAxisAlignment: MainAxisAlignment.start,
-                                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                                            spacing: 10,
-                                                            children: [
-                                                                Container(
-                                                                    width: double.infinity,
-                                                                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 16),
-                                                                    decoration: BoxDecoration(
-                                                                        image: DecorationImage(
-                                                                            image: NetworkImage("https://placehold.co/360x236"),
-                                                                            fit: BoxFit.cover,
-                                                                        ),
-                                                                    ),
-                                                                    child: Column(
-                                                                        mainAxisSize: MainAxisSize.min,
-                                                                        mainAxisAlignment: MainAxisAlignment.start,
-                                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                                        spacing: 12,
-                                                                        children: [
-                                                                            Container(
-                                                                                width: double.infinity,
-                                                                                child: Row(
-                                                                                    mainAxisSize: MainAxisSize.min,
-                                                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                                                    spacing: 192,
-                                                                                    children: [
-                                                                                        Container(
-                                                                                            width: 42.74,
-                                                                                            height: 20,
-                                                                                            child: Stack(
-                                                                                                children: [
-                                                                                                    Positioned(
-                                                                                                        left: 0,
-                                                                                                        top: 10,
-                                                                                                        child: Container(
-                                                                                                            clipBehavior: Clip.antiAlias,
-                                                                                                            decoration: BoxDecoration(),
-                                                                                                            child: Stack(),
-                                                                                                        ),
-                                                                                                    ),
-                                                                                                    Positioned(
-                                                                                                        left: 8,
-                                                                                                        top: 0,
-                                                                                                        child: Container(
-                                                                                                            width: 34.74,
-                                                                                                            height: 20,
-                                                                                                            child: Stack(
-                                                                                                                children: [
-                                                                                                                    Positioned(
-                                                                                                                        left: 0,
-                                                                                                                        top: 0.80,
-                                                                                                                        child: SizedBox(
-                                                                                                                            width: 34.74,
-                                                                                                                            height: 18.40,
-                                                                                                                            child: Text(
-                                                                                                                                'react',
-                                                                                                                                style: TextStyle(
-                                                                                                                                    color: const Color(0xFFA79BD1),
-                                                                                                                                    fontSize: 11.90,
-                                                                                                                                    fontFamily: 'Inter',
-                                                                                                                                    fontWeight: FontWeight.w500,
-                                                                                                                                    height: 1.68,
-                                                                                                                                ),
-                                                                                                                            ),
-                                                                                                                        ),
-                                                                                                                    ),
-                                                                                                                ],
-                                                                                                            ),
-                                                                                                        ),
-                                                                                                    ),
-                                                                                                ],
-                                                                                            ),
-                                                                                        ),
-                                                                                        Container(
-                                                                                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                                                                                            decoration: ShapeDecoration(
-                                                                                                color: const Color(0xFFA79BD1),
-                                                                                                shape: RoundedRectangleBorder(
-                                                                                                    borderRadius: BorderRadius.circular(9999),
-                                                                                                ),
-                                                                                            ),
-                                                                                            child: Row(
-                                                                                                mainAxisSize: MainAxisSize.min,
-                                                                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                                                                crossAxisAlignment: CrossAxisAlignment.center,
-                                                                                                spacing: 10,
-                                                                                                children: [
-                                                                                                    Text(
-                                                                                                        'available',
-                                                                                                        style: TextStyle(
-                                                                                                            color: const Color(0xFF4A3880),
-                                                                                                            fontSize: 10.20,
-                                                                                                            fontFamily: 'Inter',
-                                                                                                            fontWeight: FontWeight.w400,
-                                                                                                            height: 1.57,
-                                                                                                        ),
-                                                                                                    ),
-                                                                                                ],
-                                                                                            ),
-                                                                                        ),
-                                                                                    ],
-                                                                                ),
-                                                                            ),
-                                                                            Container(
-                                                                                padding: const EdgeInsets.symmetric(vertical: 1),
-                                                                                child: Row(
-                                                                                    mainAxisSize: MainAxisSize.min,
-                                                                                    mainAxisAlignment: MainAxisAlignment.center,
-                                                                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                                                                    spacing: 10,
-                                                                                    children: [
-                                                                                        Text(
-                                                                                            'State Management Sorcery',
-                                                                                            style: TextStyle(
-                                                                                                color: Colors.white,
-                                                                                                fontSize: 17,
-                                                                                                fontFamily: 'Inter',
-                                                                                                fontWeight: FontWeight.w700,
-                                                                                                height: 1.65,
-                                                                                            ),
-                                                                                        ),
-                                                                                    ],
-                                                                                ),
-                                                                            ),
-                                                                            Container(
-                                                                                width: double.infinity,
-                                                                                padding: const EdgeInsets.symmetric(vertical: 1),
-                                                                                child: Column(
-                                                                                    mainAxisSize: MainAxisSize.min,
-                                                                                    mainAxisAlignment: MainAxisAlignment.start,
-                                                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                                                    spacing: 2,
-                                                                                    children: [
-                                                                                        SizedBox(
-                                                                                            width: 340,
-                                                                                            child: Text(
-                                                                                                'Master the ancient art of React state management to create a powerful spell book  ',
-                                                                                                style: TextStyle(
-                                                                                                    color: const Color(0xFFA79BD1),
-                                                                                                    fontSize: 13.60,
-                                                                                                    fontFamily: 'Inter',
-                                                                                                    fontWeight: FontWeight.w400,
-                                                                                                    height: 1.76,
-                                                                                                ),
-                                                                                            ),
-                                                                                        ),
-                                                                                    ],
-                                                                                ),
-                                                                            ),
-                                                                            Row(
-                                                                                mainAxisSize: MainAxisSize.min,
-                                                                                mainAxisAlignment: MainAxisAlignment.start,
-                                                                                crossAxisAlignment: CrossAxisAlignment.center,
-                                                                                spacing: 16,
-                                                                                children: [
-                                                                                    Container(
-                                                                                        width: 70,
-                                                                                        height: 14,
-                                                                                        child: Stack(
-                                                                                            children: [
-                                                                                                Positioned(
-                                                                                                    left: 0,
-                                                                                                    top: 0,
-                                                                                                    child: Container(
-                                                                                                        width: 14,
-                                                                                                        height: 14,
-                                                                                                        clipBehavior: Clip.antiAlias,
-                                                                                                        decoration: BoxDecoration(),
-                                                                                                        child: Stack(),
-                                                                                                    ),
-                                                                                                ),
-                                                                                                Positioned(
-                                                                                                    left: 14,
-                                                                                                    top: 0,
-                                                                                                    child: Container(
-                                                                                                        width: 14,
-                                                                                                        height: 14,
-                                                                                                        clipBehavior: Clip.antiAlias,
-                                                                                                        decoration: BoxDecoration(),
-                                                                                                        child: Stack(),
-                                                                                                    ),
-                                                                                                ),
-                                                                                                Positioned(
-                                                                                                    left: 28,
-                                                                                                    top: 0,
-                                                                                                    child: Container(
-                                                                                                        width: 14,
-                                                                                                        height: 14,
-                                                                                                        clipBehavior: Clip.antiAlias,
-                                                                                                        decoration: BoxDecoration(),
-                                                                                                        child: Stack(),
-                                                                                                    ),
-                                                                                                ),
-                                                                                                Positioned(
-                                                                                                    left: 42,
-                                                                                                    top: 0,
-                                                                                                    child: Container(
-                                                                                                        width: 14,
-                                                                                                        height: 14,
-                                                                                                        clipBehavior: Clip.antiAlias,
-                                                                                                        decoration: BoxDecoration(),
-                                                                                                        child: Stack(),
-                                                                                                    ),
-                                                                                                ),
-                                                                                                Positioned(
-                                                                                                    left: 56,
-                                                                                                    top: 0,
-                                                                                                    child: Container(
-                                                                                                        width: 14,
-                                                                                                        height: 14,
-                                                                                                        clipBehavior: Clip.antiAlias,
-                                                                                                        decoration: BoxDecoration(),
-                                                                                                        child: Stack(),
-                                                                                                    ),
-                                                                                                ),
-                                                                                            ],
-                                                                                        ),
-                                                                                    ),
-                                                                                    Container(
-                                                                                        width: 60.31,
-                                                                                        height: 20,
-                                                                                        child: Stack(
-                                                                                            children: [
-                                                                                                Positioned(
-                                                                                                    left: 0,
-                                                                                                    top: 3,
-                                                                                                    child: Container(
-                                                                                                        width: 14,
-                                                                                                        height: 14,
-                                                                                                        clipBehavior: Clip.antiAlias,
-                                                                                                        decoration: BoxDecoration(),
-                                                                                                        child: Stack(),
-                                                                                                    ),
-                                                                                                ),
-                                                                                                Positioned(
-                                                                                                    left: 18,
-                                                                                                    top: 0,
-                                                                                                    child: Container(
-                                                                                                        width: 42.31,
-                                                                                                        height: 20,
-                                                                                                        child: Stack(
-                                                                                                            children: [
-                                                                                                                Positioned(
-                                                                                                                    left: 0,
-                                                                                                                    top: 0.80,
-                                                                                                                    child: SizedBox(
-                                                                                                                        width: 42.31,
-                                                                                                                        height: 18.40,
-                                                                                                                        child: Text(
-                                                                                                                            '45 min',
-                                                                                                                            style: TextStyle(
-                                                                                                                                color: const Color(0xFFA79BD1),
-                                                                                                                                fontSize: 11.90,
-                                                                                                                                fontFamily: 'Inter',
-                                                                                                                                fontWeight: FontWeight.w400,
-                                                                                                                                height: 1.68,
-                                                                                                                            ),
-                                                                                                                        ),
-                                                                                                                    ),
-                                                                                                                ),
-                                                                                                            ],
-                                                                                                        ),
-                                                                                                    ),
-                                                                                                ),
-                                                                                            ],
-                                                                                        ),
-                                                                                    ),
-                                                                                    Container(
-                                                                                        width: 108.83,
-                                                                                        height: 20,
-                                                                                        child: Stack(
-                                                                                            children: [
-                                                                                                Positioned(
-                                                                                                    left: 0,
-                                                                                                    top: 0.80,
-                                                                                                    child: SizedBox(
-                                                                                                        width: 82.26,
-                                                                                                        height: 18.40,
-                                                                                                        child: Text(
-                                                                                                            'Success rate: ',
-                                                                                                            style: TextStyle(
-                                                                                                                color: const Color(0xFFA79BD1),
-                                                                                                                fontSize: 11.90,
-                                                                                                                fontFamily: 'Inter',
-                                                                                                                fontWeight: FontWeight.w400,
-                                                                                                                height: 1.68,
-                                                                                                            ),
-                                                                                                        ),
-                                                                                                    ),
-                                                                                                ),
-                                                                                                Positioned(
-                                                                                                    left: 82.26,
-                                                                                                    top: 0.80,
-                                                                                                    child: SizedBox(
-                                                                                                        width: 26.56,
-                                                                                                        height: 18.40,
-                                                                                                        child: Text(
-                                                                                                            '62%',
-                                                                                                            style: TextStyle(
-                                                                                                                color: const Color(0xFFA79BD1),
-                                                                                                                fontSize: 11.90,
-                                                                                                                fontFamily: 'Inter',
-                                                                                                                fontWeight: FontWeight.w400,
-                                                                                                                height: 1.68,
-                                                                                                            ),
-                                                                                                        ),
-                                                                                                    ),
-                                                                                                ),
-                                                                                            ],
-                                                                                        ),
-                                                                                    ),
-                                                                                ],
-                                                                            ),
-                                                                            Container(
-                                                                                width: double.infinity,
-                                                                                child: Row(
-                                                                                    mainAxisSize: MainAxisSize.min,
-                                                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                                                                    spacing: 36,
-                                                                                    children: [
-                                                                                        Container(
-                                                                                            width: 153.69,
-                                                                                            height: 28,
-                                                                                            child: Stack(
-                                                                                                children: [
-                                                                                                    Positioned(
-                                                                                                        left: 0,
-                                                                                                        top: 0,
-                                                                                                        child: Container(
-                                                                                                            width: 84.59,
-                                                                                                            height: 28,
-                                                                                                            decoration: ShapeDecoration(
-                                                                                                                color: const Color(0xFF241445),
-                                                                                                                shape: RoundedRectangleBorder(
-                                                                                                                    borderRadius: BorderRadius.circular(9999),
-                                                                                                                ),
-                                                                                                            ),
-                                                                                                            child: Stack(
-                                                                                                                children: [
-                                                                                                                    Positioned(
-                                                                                                                        left: 12,
-                                                                                                                        top: 7,
-                                                                                                                        child: Container(
-                                                                                                                            width: 14,
-                                                                                                                            height: 14,
-                                                                                                                            clipBehavior: Clip.antiAlias,
-                                                                                                                            decoration: BoxDecoration(),
-                                                                                                                            child: Stack(),
-                                                                                                                        ),
-                                                                                                                    ),
-                                                                                                                    Positioned(
-                                                                                                                        left: 30,
-                                                                                                                        top: 4,
-                                                                                                                        child: Container(
-                                                                                                                            width: 42.59,
-                                                                                                                            height: 20,
-                                                                                                                            child: Stack(
-                                                                                                                                children: [
-                                                                                                                                    Positioned(
-                                                                                                                                        left: 0,
-                                                                                                                                        top: 0.80,
-                                                                                                                                        child: SizedBox(
-                                                                                                                                            width: 22.65,
-                                                                                                                                            height: 18.40,
-                                                                                                                                            child: Text(
-                                                                                                                                                '180',
-                                                                                                                                                style: TextStyle(
-                                                                                                                                                    color: Colors.white,
-                                                                                                                                                    fontSize: 11.90,
-                                                                                                                                                    fontFamily: 'Inter',
-                                                                                                                                                    fontWeight: FontWeight.w400,
-                                                                                                                                                    height: 1.68,
-                                                                                                                                                ),
-                                                                                                                                            ),
-                                                                                                                                        ),
-                                                                                                                                    ),
-                                                                                                                                    Positioned(
-                                                                                                                                        left: 22.65,
-                                                                                                                                        top: 0.80,
-                                                                                                                                        child: SizedBox(
-                                                                                                                                            width: 19.94,
-                                                                                                                                            height: 18.40,
-                                                                                                                                            child: Text(
-                                                                                                                                                ' XP',
-                                                                                                                                                style: TextStyle(
-                                                                                                                                                    color: Colors.white,
-                                                                                                                                                    fontSize: 11.90,
-                                                                                                                                                    fontFamily: 'Inter',
-                                                                                                                                                    fontWeight: FontWeight.w400,
-                                                                                                                                                    height: 1.68,
-                                                                                                                                                ),
-                                                                                                                                            ),
-                                                                                                                                        ),
-                                                                                                                                    ),
-                                                                                                                                ],
-                                                                                                                            ),
-                                                                                                                        ),
-                                                                                                                    ),
-                                                                                                                ],
-                                                                                                            ),
-                                                                                                        ),
-                                                                                                    ),
-                                                                                                    Positioned(
-                                                                                                        left: 96.59,
-                                                                                                        top: 0,
-                                                                                                        child: Container(
-                                                                                                            width: 57.10,
-                                                                                                            height: 28,
-                                                                                                            decoration: ShapeDecoration(
-                                                                                                                color: const Color(0xFF241445),
-                                                                                                                shape: RoundedRectangleBorder(
-                                                                                                                    borderRadius: BorderRadius.circular(9999),
-                                                                                                                ),
-                                                                                                            ),
-                                                                                                            child: Stack(
-                                                                                                                children: [
-                                                                                                                    Positioned(
-                                                                                                                        left: 12,
-                                                                                                                        top: 7,
-                                                                                                                        child: Container(
-                                                                                                                            width: 14,
-                                                                                                                            height: 14,
-                                                                                                                            clipBehavior: Clip.antiAlias,
-                                                                                                                            decoration: BoxDecoration(),
-                                                                                                                            child: Stack(),
-                                                                                                                        ),
-                                                                                                                    ),
-                                                                                                                    Positioned(
-                                                                                                                        left: 30,
-                                                                                                                        top: 4,
-                                                                                                                        child: Container(
-                                                                                                                            width: 15.10,
-                                                                                                                            height: 20,
-                                                                                                                            child: Stack(
-                                                                                                                                children: [
-                                                                                                                                    Positioned(
-                                                                                                                                        left: 0,
-                                                                                                                                        top: 0.80,
-                                                                                                                                        child: SizedBox(
-                                                                                                                                            width: 15.10,
-                                                                                                                                            height: 18.40,
-                                                                                                                                            child: Text(
-                                                                                                                                                '90',
-                                                                                                                                                style: TextStyle(
-                                                                                                                                                    color: Colors.white,
-                                                                                                                                                    fontSize: 11.90,
-                                                                                                                                                    fontFamily: 'Inter',
-                                                                                                                                                    fontWeight: FontWeight.w400,
-                                                                                                                                                    height: 1.68,
-                                                                                                                                                ),
-                                                                                                                                            ),
-                                                                                                                                        ),
-                                                                                                                                    ),
-                                                                                                                                ],
-                                                                                                                            ),
-                                                                                                                        ),
-                                                                                                                    ),
-                                                                                                                ],
-                                                                                                            ),
-                                                                                                        ),
-                                                                                                    ),
-                                                                                                ],
-                                                                                            ),
-                                                                                        ),
-                                                                                        Container(
-                                                                                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
-                                                                                            decoration: ShapeDecoration(
-                                                                                                color: const Color(0xFF8E74FF),
-                                                                                                shape: RoundedRectangleBorder(
-                                                                                                    borderRadius: BorderRadius.circular(9999),
-                                                                                                ),
-                                                                                                shadows: [
-                                                                                                    BoxShadow(
-                                                                                                        color: Color(0x00000000),
-                                                                                                        blurRadius: 0,
-                                                                                                        offset: Offset(0, 0),
-                                                                                                        spreadRadius: 0,
-                                                                                                    )BoxShadow(
-                                                                                                        color: Color(0x00000000),
-                                                                                                        blurRadius: 0,
-                                                                                                        offset: Offset(0, 0),
-                                                                                                        spreadRadius: 0,
-                                                                                                    )
-                                                                                                ],
-                                                                                            ),
-                                                                                            child: Row(
-                                                                                                mainAxisSize: MainAxisSize.min,
-                                                                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                                                                crossAxisAlignment: CrossAxisAlignment.center,
-                                                                                                spacing: 10,
-                                                                                                children: [
-                                                                                                    SizedBox(
-                                                                                                        width: 82.94,
-                                                                                                        height: 18.40,
-                                                                                                        child: Text(
-                                                                                                            'Start Mission',
-                                                                                                            textAlign: TextAlign.center,
-                                                                                                            style: TextStyle(
-                                                                                                                color: Colors.white,
-                                                                                                                fontSize: 11.90,
-                                                                                                                fontFamily: 'Inter',
-                                                                                                                fontWeight: FontWeight.w500,
-                                                                                                                height: 1.68,
-                                                                                                            ),
-                                                                                                        ),
-                                                                                                    ),
-                                                                                                ],
-                                                                                            ),
-                                                                                        ),
-                                                                                    ],
-                                                                                ),
-                                                                            ),
-                                                                        ],
-                                                                    ),
-                                                                ),
-                                                            ],
-                                                        ),
-                                                    ),
-                                                    Container(
-                                                        width: double.infinity,
-                                                        padding: const EdgeInsets.all(1),
-                                                        clipBehavior: Clip.antiAlias,
-                                                        decoration: ShapeDecoration(
-                                                            color: const Color(0xB22D1B58),
-                                                            shape: RoundedRectangleBorder(
-                                                                side: BorderSide(color: const Color(0xFF4A3880)),
-                                                                borderRadius: BorderRadius.circular(12),
-                                                            ),
-                                                        ),
-                                                        child: Column(
-                                                            mainAxisSize: MainAxisSize.min,
-                                                            mainAxisAlignment: MainAxisAlignment.start,
-                                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                                            spacing: 10,
-                                                            children: [
-                                                                Container(
-                                                                    width: double.infinity,
-                                                                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 16),
-                                                                    decoration: BoxDecoration(
-                                                                        image: DecorationImage(
-                                                                            image: NetworkImage("https://placehold.co/360x226"),
-                                                                            fit: BoxFit.cover,
-                                                                        ),
-                                                                    ),
-                                                                    child: Column(
-                                                                        mainAxisSize: MainAxisSize.min,
-                                                                        mainAxisAlignment: MainAxisAlignment.start,
-                                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                                        spacing: 10,
-                                                                        children: [
-                                                                            Container(
-                                                                                width: double.infinity,
-                                                                                child: Row(
-                                                                                    mainAxisSize: MainAxisSize.min,
-                                                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                                                    spacing: 108,
-                                                                                    children: [
-                                                                                        Container(
-                                                                                            width: 78.34,
-                                                                                            height: 20,
-                                                                                            child: Stack(
-                                                                                                children: [
-                                                                                                    Positioned(
-                                                                                                        left: 0,
-                                                                                                        top: 10,
-                                                                                                        child: Container(
-                                                                                                            clipBehavior: Clip.antiAlias,
-                                                                                                            decoration: BoxDecoration(),
-                                                                                                            child: Stack(),
-                                                                                                        ),
-                                                                                                    ),
-                                                                                                    Positioned(
-                                                                                                        left: 8,
-                                                                                                        top: 0,
-                                                                                                        child: Container(
-                                                                                                            width: 70.34,
-                                                                                                            height: 20,
-                                                                                                            child: Stack(
-                                                                                                                children: [
-                                                                                                                    Positioned(
-                                                                                                                        left: 0,
-                                                                                                                        top: 0.80,
-                                                                                                                        child: SizedBox(
-                                                                                                                            width: 70.34,
-                                                                                                                            height: 18.40,
-                                                                                                                            child: Text(
-                                                                                                                                'algorithms',
-                                                                                                                                style: TextStyle(
-                                                                                                                                    color: const Color(0xFFA79BD1),
-                                                                                                                                    fontSize: 11.90,
-                                                                                                                                    fontFamily: 'Inter',
-                                                                                                                                    fontWeight: FontWeight.w500,
-                                                                                                                                    height: 1.68,
-                                                                                                                                ),
-                                                                                                                            ),
-                                                                                                                        ),
-                                                                                                                    ),
-                                                                                                                ],
-                                                                                                            ),
-                                                                                                        ),
-                                                                                                    ),
-                                                                                                ],
-                                                                                            ),
-                                                                                        ),
-                                                                                        Container(
-                                                                                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                                                                                            decoration: ShapeDecoration(
-                                                                                                color: const Color(0xFFA79BD1),
-                                                                                                shape: RoundedRectangleBorder(
-                                                                                                    borderRadius: BorderRadius.circular(9999),
-                                                                                                ),
-                                                                                            ),
-                                                                                            child: Row(
-                                                                                                mainAxisSize: MainAxisSize.min,
-                                                                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                                                                crossAxisAlignment: CrossAxisAlignment.center,
-                                                                                                spacing: 10,
-                                                                                                children: [
-                                                                                                    Text(
-                                                                                                        'Unlocks at Level 5',
-                                                                                                        style: TextStyle(
-                                                                                                            color: const Color(0xFF4A3880),
-                                                                                                            fontSize: 10.20,
-                                                                                                            fontFamily: 'Inter',
-                                                                                                            fontWeight: FontWeight.w400,
-                                                                                                            height: 1.57,
-                                                                                                        ),
-                                                                                                    ),
-                                                                                                ],
-                                                                                            ),
-                                                                                        ),
-                                                                                    ],
-                                                                                ),
-                                                                            ),
-                                                                            Container(
-                                                                                padding: const EdgeInsets.symmetric(vertical: 1),
-                                                                                child: Row(
-                                                                                    mainAxisSize: MainAxisSize.min,
-                                                                                    mainAxisAlignment: MainAxisAlignment.center,
-                                                                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                                                                    spacing: 10,
-                                                                                    children: [
-                                                                                        Text(
-                                                                                            'The Recursive Labyrinth',
-                                                                                            style: TextStyle(
-                                                                                                color: Colors.white,
-                                                                                                fontSize: 17,
-                                                                                                fontFamily: 'Inter',
-                                                                                                fontWeight: FontWeight.w700,
-                                                                                                height: 1.65,
-                                                                                            ),
-                                                                                        ),
-                                                                                    ],
-                                                                                ),
-                                                                            ),
-                                                                            Container(
-                                                                                width: 285.26,
-                                                                                padding: const EdgeInsets.symmetric(vertical: 1),
-                                                                                child: Column(
-                                                                                    mainAxisSize: MainAxisSize.min,
-                                                                                    mainAxisAlignment: MainAxisAlignment.start,
-                                                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                                                    spacing: 2,
-                                                                                    children: [
-                                                                                        SizedBox(
-                                                                                            width: 285.26,
-                                                                                            height: 21.60,
-                                                                                            child: Text(
-                                                                                                'Navigate through a complex maze using ',
-                                                                                                style: TextStyle(
-                                                                                                    color: const Color(0xFFA79BD1),
-                                                                                                    fontSize: 13.60,
-                                                                                                    fontFamily: 'Inter',
-                                                                                                    fontWeight: FontWeight.w400,
-                                                                                                    height: 1.76,
-                                                                                                ),
-                                                                                            ),
-                                                                                        ),
-                                                                                        SizedBox(
-                                                                                            width: 285.26,
-                                                                                            height: 21.60,
-                                                                                            child: Text(
-                                                                                                'the power of recursive algorithms',
-                                                                                                style: TextStyle(
-                                                                                                    color: const Color(0xFFA79BD1),
-                                                                                                    fontSize: 13.60,
-                                                                                                    fontFamily: 'Inter',
-                                                                                                    fontWeight: FontWeight.w400,
-                                                                                                    height: 1.76,
-                                                                                                ),
-                                                                                            ),
-                                                                                        ),
-                                                                                    ],
-                                                                                ),
-                                                                            ),
-                                                                            Row(
-                                                                                mainAxisSize: MainAxisSize.min,
-                                                                                mainAxisAlignment: MainAxisAlignment.start,
-                                                                                crossAxisAlignment: CrossAxisAlignment.center,
-                                                                                spacing: 16,
-                                                                                children: [
-                                                                                    Container(
-                                                                                        width: 70,
-                                                                                        height: 14,
-                                                                                        child: Stack(
-                                                                                            children: [
-                                                                                                Positioned(
-                                                                                                    left: 0,
-                                                                                                    top: 0,
-                                                                                                    child: Container(
-                                                                                                        width: 14,
-                                                                                                        height: 14,
-                                                                                                        clipBehavior: Clip.antiAlias,
-                                                                                                        decoration: BoxDecoration(),
-                                                                                                        child: Stack(),
-                                                                                                    ),
-                                                                                                ),
-                                                                                                Positioned(
-                                                                                                    left: 14,
-                                                                                                    top: 0,
-                                                                                                    child: Container(
-                                                                                                        width: 14,
-                                                                                                        height: 14,
-                                                                                                        clipBehavior: Clip.antiAlias,
-                                                                                                        decoration: BoxDecoration(),
-                                                                                                        child: Stack(),
-                                                                                                    ),
-                                                                                                ),
-                                                                                                Positioned(
-                                                                                                    left: 28,
-                                                                                                    top: 0,
-                                                                                                    child: Container(
-                                                                                                        width: 14,
-                                                                                                        height: 14,
-                                                                                                        clipBehavior: Clip.antiAlias,
-                                                                                                        decoration: BoxDecoration(),
-                                                                                                        child: Stack(),
-                                                                                                    ),
-                                                                                                ),
-                                                                                                Positioned(
-                                                                                                    left: 42,
-                                                                                                    top: 0,
-                                                                                                    child: Container(
-                                                                                                        width: 14,
-                                                                                                        height: 14,
-                                                                                                        clipBehavior: Clip.antiAlias,
-                                                                                                        decoration: BoxDecoration(),
-                                                                                                        child: Stack(),
-                                                                                                    ),
-                                                                                                ),
-                                                                                                Positioned(
-                                                                                                    left: 56,
-                                                                                                    top: 0,
-                                                                                                    child: Container(
-                                                                                                        width: 14,
-                                                                                                        height: 14,
-                                                                                                        clipBehavior: Clip.antiAlias,
-                                                                                                        decoration: BoxDecoration(),
-                                                                                                        child: Stack(),
-                                                                                                    ),
-                                                                                                ),
-                                                                                            ],
-                                                                                        ),
-                                                                                    ),
-                                                                                    Container(
-                                                                                        width: 60.31,
-                                                                                        height: 20,
-                                                                                        child: Stack(
-                                                                                            children: [
-                                                                                                Positioned(
-                                                                                                    left: 0,
-                                                                                                    top: 3,
-                                                                                                    child: Container(
-                                                                                                        width: 14,
-                                                                                                        height: 14,
-                                                                                                        clipBehavior: Clip.antiAlias,
-                                                                                                        decoration: BoxDecoration(),
-                                                                                                        child: Stack(),
-                                                                                                    ),
-                                                                                                ),
-                                                                                                Positioned(
-                                                                                                    left: 18,
-                                                                                                    top: 0,
-                                                                                                    child: Container(
-                                                                                                        width: 42.31,
-                                                                                                        height: 20,
-                                                                                                        child: Stack(
-                                                                                                            children: [
-                                                                                                                Positioned(
-                                                                                                                    left: 0,
-                                                                                                                    top: 0.80,
-                                                                                                                    child: SizedBox(
-                                                                                                                        width: 42.31,
-                                                                                                                        height: 18.40,
-                                                                                                                        child: Text(
-                                                                                                                            '60 min',
-                                                                                                                            style: TextStyle(
-                                                                                                                                color: const Color(0xFFA79BD1),
-                                                                                                                                fontSize: 11.90,
-                                                                                                                                fontFamily: 'Inter',
-                                                                                                                                fontWeight: FontWeight.w400,
-                                                                                                                                height: 1.68,
-                                                                                                                            ),
-                                                                                                                        ),
-                                                                                                                    ),
-                                                                                                                ),
-                                                                                                            ],
-                                                                                                        ),
-                                                                                                    ),
-                                                                                                ),
-                                                                                            ],
-                                                                                        ),
-                                                                                    ),
-                                                                                    Container(
-                                                                                        width: 108.83,
-                                                                                        height: 20,
-                                                                                        child: Stack(
-                                                                                            children: [
-                                                                                                Positioned(
-                                                                                                    left: 0,
-                                                                                                    top: 0.80,
-                                                                                                    child: SizedBox(
-                                                                                                        width: 82.26,
-                                                                                                        height: 18.40,
-                                                                                                        child: Text(
-                                                                                                            'Success rate: ',
-                                                                                                            style: TextStyle(
-                                                                                                                color: const Color(0xFFA79BD1),
-                                                                                                                fontSize: 11.90,
-                                                                                                                fontFamily: 'Inter',
-                                                                                                                fontWeight: FontWeight.w400,
-                                                                                                                height: 1.68,
-                                                                                                            ),
-                                                                                                        ),
-                                                                                                    ),
-                                                                                                ),
-                                                                                                Positioned(
-                                                                                                    left: 82.26,
-                                                                                                    top: 0.80,
-                                                                                                    child: SizedBox(
-                                                                                                        width: 26.56,
-                                                                                                        height: 18.40,
-                                                                                                        child: Text(
-                                                                                                            '45%',
-                                                                                                            style: TextStyle(
-                                                                                                                color: const Color(0xFFA79BD1),
-                                                                                                                fontSize: 11.90,
-                                                                                                                fontFamily: 'Inter',
-                                                                                                                fontWeight: FontWeight.w400,
-                                                                                                                height: 1.68,
-                                                                                                            ),
-                                                                                                        ),
-                                                                                                    ),
-                                                                                                ),
-                                                                                            ],
-                                                                                        ),
-                                                                                    ),
-                                                                                ],
-                                                                            ),
-                                                                            Container(
-                                                                                width: double.infinity,
-                                                                                child: Row(
-                                                                                    mainAxisSize: MainAxisSize.min,
-                                                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                                                                    spacing: 29,
-                                                                                    children: [
-                                                                                        Container(
-                                                                                            width: 161.24,
-                                                                                            height: 28,
-                                                                                            child: Stack(
-                                                                                                children: [
-                                                                                                    Positioned(
-                                                                                                        left: 0,
-                                                                                                        top: 0,
-                                                                                                        child: Container(
-                                                                                                            width: 84.59,
-                                                                                                            height: 28,
-                                                                                                            decoration: ShapeDecoration(
-                                                                                                                color: const Color(0xFF241445),
-                                                                                                                shape: RoundedRectangleBorder(
-                                                                                                                    borderRadius: BorderRadius.circular(9999),
-                                                                                                                ),
-                                                                                                            ),
-                                                                                                            child: Stack(
-                                                                                                                children: [
-                                                                                                                    Positioned(
-                                                                                                                        left: 12,
-                                                                                                                        top: 7,
-                                                                                                                        child: Container(
-                                                                                                                            width: 14,
-                                                                                                                            height: 14,
-                                                                                                                            clipBehavior: Clip.antiAlias,
-                                                                                                                            decoration: BoxDecoration(),
-                                                                                                                            child: Stack(),
-                                                                                                                        ),
-                                                                                                                    ),
-                                                                                                                    Positioned(
-                                                                                                                        left: 30,
-                                                                                                                        top: 4,
-                                                                                                                        child: Container(
-                                                                                                                            width: 42.59,
-                                                                                                                            height: 20,
-                                                                                                                            child: Stack(
-                                                                                                                                children: [
-                                                                                                                                    Positioned(
-                                                                                                                                        left: 0,
-                                                                                                                                        top: 0.80,
-                                                                                                                                        child: SizedBox(
-                                                                                                                                            width: 22.65,
-                                                                                                                                            height: 18.40,
-                                                                                                                                            child: Text(
-                                                                                                                                                '250',
-                                                                                                                                                style: TextStyle(
-                                                                                                                                                    color: Colors.white,
-                                                                                                                                                    fontSize: 11.90,
-                                                                                                                                                    fontFamily: 'Inter',
-                                                                                                                                                    fontWeight: FontWeight.w400,
-                                                                                                                                                    height: 1.68,
-                                                                                                                                                ),
-                                                                                                                                            ),
-                                                                                                                                        ),
-                                                                                                                                    ),
-                                                                                                                                    Positioned(
-                                                                                                                                        left: 22.65,
-                                                                                                                                        top: 0.80,
-                                                                                                                                        child: SizedBox(
-                                                                                                                                            width: 19.94,
-                                                                                                                                            height: 18.40,
-                                                                                                                                            child: Text(
-                                                                                                                                                ' XP',
-                                                                                                                                                style: TextStyle(
-                                                                                                                                                    color: Colors.white,
-                                                                                                                                                    fontSize: 11.90,
-                                                                                                                                                    fontFamily: 'Inter',
-                                                                                                                                                    fontWeight: FontWeight.w400,
-                                                                                                                                                    height: 1.68,
-                                                                                                                                                ),
-                                                                                                                                            ),
-                                                                                                                                        ),
-                                                                                                                                    ),
-                                                                                                                                ],
-                                                                                                                            ),
-                                                                                                                        ),
-                                                                                                                    ),
-                                                                                                                ],
-                                                                                                            ),
-                                                                                                        ),
-                                                                                                    ),
-                                                                                                    Positioned(
-                                                                                                        left: 96.59,
-                                                                                                        top: 0,
-                                                                                                        child: Container(
-                                                                                                            width: 64.65,
-                                                                                                            height: 28,
-                                                                                                            decoration: ShapeDecoration(
-                                                                                                                color: const Color(0xFF241445),
-                                                                                                                shape: RoundedRectangleBorder(
-                                                                                                                    borderRadius: BorderRadius.circular(9999),
-                                                                                                                ),
-                                                                                                            ),
-                                                                                                            child: Stack(
-                                                                                                                children: [
-                                                                                                                    Positioned(
-                                                                                                                        left: 12,
-                                                                                                                        top: 7,
-                                                                                                                        child: Container(
-                                                                                                                            width: 14,
-                                                                                                                            height: 14,
-                                                                                                                            clipBehavior: Clip.antiAlias,
-                                                                                                                            decoration: BoxDecoration(),
-                                                                                                                            child: Stack(),
-                                                                                                                        ),
-                                                                                                                    ),
-                                                                                                                    Positioned(
-                                                                                                                        left: 30,
-                                                                                                                        top: 4,
-                                                                                                                        child: Container(
-                                                                                                                            width: 22.65,
-                                                                                                                            height: 20,
-                                                                                                                            child: Stack(
-                                                                                                                                children: [
-                                                                                                                                    Positioned(
-                                                                                                                                        left: 0,
-                                                                                                                                        top: 0.80,
-                                                                                                                                        child: SizedBox(
-                                                                                                                                            width: 22.65,
-                                                                                                                                            height: 18.40,
-                                                                                                                                            child: Text(
-                                                                                                                                                '120',
-                                                                                                                                                style: TextStyle(
-                                                                                                                                                    color: Colors.white,
-                                                                                                                                                    fontSize: 11.90,
-                                                                                                                                                    fontFamily: 'Inter',
-                                                                                                                                                    fontWeight: FontWeight.w400,
-                                                                                                                                                    height: 1.68,
-                                                                                                                                                ),
-                                                                                                                                            ),
-                                                                                                                                        ),
-                                                                                                                                    ),
-                                                                                                                                ],
-                                                                                                                            ),
-                                                                                                                        ),
-                                                                                                                    ),
-                                                                                                                ],
-                                                                                                            ),
-                                                                                                        ),
-                                                                                                    ),
-                                                                                                ],
-                                                                                            ),
-                                                                                        ),
-                                                                                        Container(
-                                                                                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
-                                                                                            decoration: ShapeDecoration(
-                                                                                                color: const Color(0xFF8E74FF),
-                                                                                                shape: RoundedRectangleBorder(
-                                                                                                    borderRadius: BorderRadius.circular(9999),
-                                                                                                ),
-                                                                                                shadows: [
-                                                                                                    BoxShadow(
-                                                                                                        color: Color(0x00000000),
-                                                                                                        blurRadius: 0,
-                                                                                                        offset: Offset(0, 0),
-                                                                                                        spreadRadius: 0,
-                                                                                                    )BoxShadow(
-                                                                                                        color: Color(0x00000000),
-                                                                                                        blurRadius: 0,
-                                                                                                        offset: Offset(0, 0),
-                                                                                                        spreadRadius: 0,
-                                                                                                    )
-                                                                                                ],
-                                                                                            ),
-                                                                                            child: Row(
-                                                                                                mainAxisSize: MainAxisSize.min,
-                                                                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                                                                crossAxisAlignment: CrossAxisAlignment.center,
-                                                                                                spacing: 10,
-                                                                                                children: [
-                                                                                                    SizedBox(
-                                                                                                        width: 82.94,
-                                                                                                        height: 18.40,
-                                                                                                        child: Text(
-                                                                                                            'Start Mission',
-                                                                                                            textAlign: TextAlign.center,
-                                                                                                            style: TextStyle(
-                                                                                                                color: Colors.white,
-                                                                                                                fontSize: 11.90,
-                                                                                                                fontFamily: 'Inter',
-                                                                                                                fontWeight: FontWeight.w500,
-                                                                                                                height: 1.68,
-                                                                                                            ),
-                                                                                                        ),
-                                                                                                    ),
-                                                                                                ],
-                                                                                            ),
-                                                                                        ),
-                                                                                    ],
-                                                                                ),
-                                                                            ),
-                                                                        ],
-                                                                    ),
-                                                                ),
-                                                            ],
-                                                        ),
-                                                    ),
-                                                    Container(
-                                                        width: double.infinity,
-                                                        padding: const EdgeInsets.all(1),
-                                                        clipBehavior: Clip.antiAlias,
-                                                        decoration: ShapeDecoration(
-                                                            color: const Color(0xFF2D1B58),
-                                                            shape: RoundedRectangleBorder(
-                                                                side: BorderSide(color: const Color(0xFF4A3880)),
-                                                                borderRadius: BorderRadius.circular(12),
-                                                            ),
-                                                        ),
-                                                        child: Column(
-                                                            mainAxisSize: MainAxisSize.min,
-                                                            mainAxisAlignment: MainAxisAlignment.start,
-                                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                                            spacing: 10,
-                                                            children: [
-                                                                Container(
-                                                                    width: double.infinity,
-                                                                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 16),
-                                                                    child: Column(
-                                                                        mainAxisSize: MainAxisSize.min,
-                                                                        mainAxisAlignment: MainAxisAlignment.start,
-                                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                                        spacing: 10,
-                                                                        children: [
-                                                                            Container(
-                                                                                width: double.infinity,
-                                                                                child: Row(
-                                                                                    mainAxisSize: MainAxisSize.min,
-                                                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                                                    spacing: 182,
-                                                                                    children: [
-                                                                                        Container(
-                                                                                            width: 42.74,
-                                                                                            height: 20,
-                                                                                            child: Stack(
-                                                                                                children: [
-                                                                                                    Positioned(
-                                                                                                        left: 0,
-                                                                                                        top: 10,
-                                                                                                        child: Container(
-                                                                                                            clipBehavior: Clip.antiAlias,
-                                                                                                            decoration: BoxDecoration(),
-                                                                                                            child: Stack(),
-                                                                                                        ),
-                                                                                                    ),
-                                                                                                    Positioned(
-                                                                                                        left: 8,
-                                                                                                        top: 0,
-                                                                                                        child: Container(
-                                                                                                            width: 34.74,
-                                                                                                            height: 20,
-                                                                                                            child: Stack(
-                                                                                                                children: [
-                                                                                                                    Positioned(
-                                                                                                                        left: 0,
-                                                                                                                        top: 0.80,
-                                                                                                                        child: SizedBox(
-                                                                                                                            width: 34.74,
-                                                                                                                            height: 18.40,
-                                                                                                                            child: Text(
-                                                                                                                                'react',
-                                                                                                                                style: TextStyle(
-                                                                                                                                    color: const Color(0xFFA79BD1),
-                                                                                                                                    fontSize: 11.90,
-                                                                                                                                    fontFamily: 'Inter',
-                                                                                                                                    fontWeight: FontWeight.w500,
-                                                                                                                                    height: 1.68,
-                                                                                                                                ),
-                                                                                                                            ),
-                                                                                                                        ),
-                                                                                                                    ),
-                                                                                                                ],
-                                                                                                            ),
-                                                                                                        ),
-                                                                                                    ),
-                                                                                                ],
-                                                                                            ),
-                                                                                        ),
-                                                                                        Container(
-                                                                                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                                                                                            decoration: ShapeDecoration(
-                                                                                                color: const Color(0xFF0C9369),
-                                                                                                shape: RoundedRectangleBorder(
-                                                                                                    borderRadius: BorderRadius.circular(9999),
-                                                                                                ),
-                                                                                            ),
-                                                                                            child: Row(
-                                                                                                mainAxisSize: MainAxisSize.min,
-                                                                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                                                                crossAxisAlignment: CrossAxisAlignment.center,
-                                                                                                spacing: 10,
-                                                                                                children: [
-                                                                                                    Text(
-                                                                                                        'completed',
-                                                                                                        style: TextStyle(
-                                                                                                            color: Colors.white,
-                                                                                                            fontSize: 10.20,
-                                                                                                            fontFamily: 'Inter',
-                                                                                                            fontWeight: FontWeight.w400,
-                                                                                                            height: 1.57,
-                                                                                                        ),
-                                                                                                    ),
-                                                                                                ],
-                                                                                            ),
-                                                                                        ),
-                                                                                    ],
-                                                                                ),
-                                                                            ),
-                                                                            Container(
-                                                                                padding: const EdgeInsets.symmetric(vertical: 1),
-                                                                                child: Row(
-                                                                                    mainAxisSize: MainAxisSize.min,
-                                                                                    mainAxisAlignment: MainAxisAlignment.center,
-                                                                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                                                                    spacing: 10,
-                                                                                    children: [
-                                                                                        Text(
-                                                                                            'API Crystal Gazing',
-                                                                                            style: TextStyle(
-                                                                                                color: Colors.white,
-                                                                                                fontSize: 17,
-                                                                                                fontFamily: 'Inter',
-                                                                                                fontWeight: FontWeight.w700,
-                                                                                                height: 1.65,
-                                                                                            ),
-                                                                                        ),
-                                                                                    ],
-                                                                                ),
-                                                                            ),
-                                                                            Container(
-                                                                                width: 260.39,
-                                                                                padding: const EdgeInsets.symmetric(vertical: 1),
-                                                                                child: Column(
-                                                                                    mainAxisSize: MainAxisSize.min,
-                                                                                    mainAxisAlignment: MainAxisAlignment.start,
-                                                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                                                    spacing: 2,
-                                                                                    children: [
-                                                                                        SizedBox(
-                                                                                            width: 260.39,
-                                                                                            height: 21.60,
-                                                                                            child: Text(
-                                                                                                'Harness the power of async magic to ',
-                                                                                                style: TextStyle(
-                                                                                                    color: const Color(0xFFA79BD1),
-                                                                                                    fontSize: 13.60,
-                                                                                                    fontFamily: 'Inter',
-                                                                                                    fontWeight: FontWeight.w400,
-                                                                                                    height: 1.76,
-                                                                                                ),
-                                                                                            ),
-                                                                                        ),
-                                                                                        SizedBox(
-                                                                                            width: 260.39,
-                                                                                            height: 21.60,
-                                                                                            child: Text(
-                                                                                                'communicate with distant realms',
-                                                                                                style: TextStyle(
-                                                                                                    color: const Color(0xFFA79BD1),
-                                                                                                    fontSize: 13.60,
-                                                                                                    fontFamily: 'Inter',
-                                                                                                    fontWeight: FontWeight.w400,
-                                                                                                    height: 1.76,
-                                                                                                ),
-                                                                                            ),
-                                                                                        ),
-                                                                                    ],
-                                                                                ),
-                                                                            ),
-                                                                            Row(
-                                                                                mainAxisSize: MainAxisSize.min,
-                                                                                mainAxisAlignment: MainAxisAlignment.start,
-                                                                                crossAxisAlignment: CrossAxisAlignment.center,
-                                                                                spacing: 16,
-                                                                                children: [
-                                                                                    Container(
-                                                                                        width: 70,
-                                                                                        height: 14,
-                                                                                        child: Stack(
-                                                                                            children: [
-                                                                                                Positioned(
-                                                                                                    left: 0,
-                                                                                                    top: 0,
-                                                                                                    child: Container(
-                                                                                                        width: 14,
-                                                                                                        height: 14,
-                                                                                                        clipBehavior: Clip.antiAlias,
-                                                                                                        decoration: BoxDecoration(),
-                                                                                                        child: Stack(),
-                                                                                                    ),
-                                                                                                ),
-                                                                                                Positioned(
-                                                                                                    left: 14,
-                                                                                                    top: 0,
-                                                                                                    child: Container(
-                                                                                                        width: 14,
-                                                                                                        height: 14,
-                                                                                                        clipBehavior: Clip.antiAlias,
-                                                                                                        decoration: BoxDecoration(),
-                                                                                                        child: Stack(),
-                                                                                                    ),
-                                                                                                ),
-                                                                                                Positioned(
-                                                                                                    left: 28,
-                                                                                                    top: 0,
-                                                                                                    child: Container(
-                                                                                                        width: 14,
-                                                                                                        height: 14,
-                                                                                                        clipBehavior: Clip.antiAlias,
-                                                                                                        decoration: BoxDecoration(),
-                                                                                                        child: Stack(),
-                                                                                                    ),
-                                                                                                ),
-                                                                                                Positioned(
-                                                                                                    left: 42,
-                                                                                                    top: 0,
-                                                                                                    child: Container(
-                                                                                                        width: 14,
-                                                                                                        height: 14,
-                                                                                                        clipBehavior: Clip.antiAlias,
-                                                                                                        decoration: BoxDecoration(),
-                                                                                                        child: Stack(),
-                                                                                                    ),
-                                                                                                ),
-                                                                                                Positioned(
-                                                                                                    left: 56,
-                                                                                                    top: 0,
-                                                                                                    child: Container(
-                                                                                                        width: 14,
-                                                                                                        height: 14,
-                                                                                                        clipBehavior: Clip.antiAlias,
-                                                                                                        decoration: BoxDecoration(),
-                                                                                                        child: Stack(),
-                                                                                                    ),
-                                                                                                ),
-                                                                                            ],
-                                                                                        ),
-                                                                                    ),
-                                                                                    Container(
-                                                                                        width: 60.31,
-                                                                                        height: 20,
-                                                                                        child: Stack(
-                                                                                            children: [
-                                                                                                Positioned(
-                                                                                                    left: 0,
-                                                                                                    top: 3,
-                                                                                                    child: Container(
-                                                                                                        width: 14,
-                                                                                                        height: 14,
-                                                                                                        clipBehavior: Clip.antiAlias,
-                                                                                                        decoration: BoxDecoration(),
-                                                                                                        child: Stack(),
-                                                                                                    ),
-                                                                                                ),
-                                                                                                Positioned(
-                                                                                                    left: 18,
-                                                                                                    top: 0,
-                                                                                                    child: Container(
-                                                                                                        width: 42.31,
-                                                                                                        height: 20,
-                                                                                                        child: Stack(
-                                                                                                            children: [
-                                                                                                                Positioned(
-                                                                                                                    left: 0,
-                                                                                                                    top: 0.80,
-                                                                                                                    child: SizedBox(
-                                                                                                                        width: 42.31,
-                                                                                                                        height: 18.40,
-                                                                                                                        child: Text(
-                                                                                                                            '40 min',
-                                                                                                                            style: TextStyle(
-                                                                                                                                color: const Color(0xFFA79BD1),
-                                                                                                                                fontSize: 11.90,
-                                                                                                                                fontFamily: 'Inter',
-                                                                                                                                fontWeight: FontWeight.w400,
-                                                                                                                                height: 1.68,
-                                                                                                                            ),
-                                                                                                                        ),
-                                                                                                                    ),
-                                                                                                                ),
-                                                                                                            ],
-                                                                                                        ),
-                                                                                                    ),
-                                                                                                ),
-                                                                                            ],
-                                                                                        ),
-                                                                                    ),
-                                                                                    Container(
-                                                                                        width: 108.83,
-                                                                                        height: 20,
-                                                                                        child: Stack(
-                                                                                            children: [
-                                                                                                Positioned(
-                                                                                                    left: 0,
-                                                                                                    top: 0.80,
-                                                                                                    child: SizedBox(
-                                                                                                        width: 82.26,
-                                                                                                        height: 18.40,
-                                                                                                        child: Text(
-                                                                                                            'Success rate: ',
-                                                                                                            style: TextStyle(
-                                                                                                                color: const Color(0xFFA79BD1),
-                                                                                                                fontSize: 11.90,
-                                                                                                                fontFamily: 'Inter',
-                                                                                                                fontWeight: FontWeight.w400,
-                                                                                                                height: 1.68,
-                                                                                                            ),
-                                                                                                        ),
-                                                                                                    ),
-                                                                                                ),
-                                                                                                Positioned(
-                                                                                                    left: 82.26,
-                                                                                                    top: 0.80,
-                                                                                                    child: SizedBox(
-                                                                                                        width: 26.56,
-                                                                                                        height: 18.40,
-                                                                                                        child: Text(
-                                                                                                            '70%',
-                                                                                                            style: TextStyle(
-                                                                                                                color: const Color(0xFFA79BD1),
-                                                                                                                fontSize: 11.90,
-                                                                                                                fontFamily: 'Inter',
-                                                                                                                fontWeight: FontWeight.w400,
-                                                                                                                height: 1.68,
-                                                                                                            ),
-                                                                                                        ),
-                                                                                                    ),
-                                                                                                ),
-                                                                                            ],
-                                                                                        ),
-                                                                                    ),
-                                                                                ],
-                                                                            ),
-                                                                            Container(
-                                                                                width: double.infinity,
-                                                                                child: Row(
-                                                                                    mainAxisSize: MainAxisSize.min,
-                                                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                                                                    spacing: 69,
-                                                                                    children: [
-                                                                                        Container(
-                                                                                            width: 161.24,
-                                                                                            height: 28,
-                                                                                            child: Stack(
-                                                                                                children: [
-                                                                                                    Positioned(
-                                                                                                        left: 0,
-                                                                                                        top: 0,
-                                                                                                        child: Container(
-                                                                                                            width: 84.59,
-                                                                                                            height: 28,
-                                                                                                            decoration: ShapeDecoration(
-                                                                                                                color: const Color(0xFF241445),
-                                                                                                                shape: RoundedRectangleBorder(
-                                                                                                                    borderRadius: BorderRadius.circular(9999),
-                                                                                                                ),
-                                                                                                            ),
-                                                                                                            child: Stack(
-                                                                                                                children: [
-                                                                                                                    Positioned(
-                                                                                                                        left: 12,
-                                                                                                                        top: 7,
-                                                                                                                        child: Container(
-                                                                                                                            width: 14,
-                                                                                                                            height: 14,
-                                                                                                                            clipBehavior: Clip.antiAlias,
-                                                                                                                            decoration: BoxDecoration(),
-                                                                                                                            child: Stack(),
-                                                                                                                        ),
-                                                                                                                    ),
-                                                                                                                    Positioned(
-                                                                                                                        left: 30,
-                                                                                                                        top: 4,
-                                                                                                                        child: Container(
-                                                                                                                            width: 42.59,
-                                                                                                                            height: 20,
-                                                                                                                            child: Stack(
-                                                                                                                                children: [
-                                                                                                                                    Positioned(
-                                                                                                                                        left: 0,
-                                                                                                                                        top: 0.80,
-                                                                                                                                        child: SizedBox(
-                                                                                                                                            width: 22.65,
-                                                                                                                                            height: 18.40,
-                                                                                                                                            child: Text(
-                                                                                                                                                '200',
-                                                                                                                                                style: TextStyle(
-                                                                                                                                                    color: Colors.white,
-                                                                                                                                                    fontSize: 11.90,
-                                                                                                                                                    fontFamily: 'Inter',
-                                                                                                                                                    fontWeight: FontWeight.w400,
-                                                                                                                                                    height: 1.68,
-                                                                                                                                                ),
-                                                                                                                                            ),
-                                                                                                                                        ),
-                                                                                                                                    ),
-                                                                                                                                    Positioned(
-                                                                                                                                        left: 22.65,
-                                                                                                                                        top: 0.80,
-                                                                                                                                        child: SizedBox(
-                                                                                                                                            width: 19.94,
-                                                                                                                                            height: 18.40,
-                                                                                                                                            child: Text(
-                                                                                                                                                ' XP',
-                                                                                                                                                style: TextStyle(
-                                                                                                                                                    color: Colors.white,
-                                                                                                                                                    fontSize: 11.90,
-                                                                                                                                                    fontFamily: 'Inter',
-                                                                                                                                                    fontWeight: FontWeight.w400,
-                                                                                                                                                    height: 1.68,
-                                                                                                                                                ),
-                                                                                                                                            ),
-                                                                                                                                        ),
-                                                                                                                                    ),
-                                                                                                                                ],
-                                                                                                                            ),
-                                                                                                                        ),
-                                                                                                                    ),
-                                                                                                                ],
-                                                                                                            ),
-                                                                                                        ),
-                                                                                                    ),
-                                                                                                    Positioned(
-                                                                                                        left: 96.59,
-                                                                                                        top: 0,
-                                                                                                        child: Container(
-                                                                                                            width: 64.65,
-                                                                                                            height: 28,
-                                                                                                            decoration: ShapeDecoration(
-                                                                                                                color: const Color(0xFF241445),
-                                                                                                                shape: RoundedRectangleBorder(
-                                                                                                                    borderRadius: BorderRadius.circular(9999),
-                                                                                                                ),
-                                                                                                            ),
-                                                                                                            child: Stack(
-                                                                                                                children: [
-                                                                                                                    Positioned(
-                                                                                                                        left: 12,
-                                                                                                                        top: 7,
-                                                                                                                        child: Container(
-                                                                                                                            width: 14,
-                                                                                                                            height: 14,
-                                                                                                                            clipBehavior: Clip.antiAlias,
-                                                                                                                            decoration: BoxDecoration(),
-                                                                                                                            child: Stack(),
-                                                                                                                        ),
-                                                                                                                    ),
-                                                                                                                    Positioned(
-                                                                                                                        left: 30,
-                                                                                                                        top: 4,
-                                                                                                                        child: Container(
-                                                                                                                            width: 22.65,
-                                                                                                                            height: 20,
-                                                                                                                            child: Stack(
-                                                                                                                                children: [
-                                                                                                                                    Positioned(
-                                                                                                                                        left: 0,
-                                                                                                                                        top: 0.80,
-                                                                                                                                        child: SizedBox(
-                                                                                                                                            width: 22.65,
-                                                                                                                                            height: 18.40,
-                                                                                                                                            child: Text(
-                                                                                                                                                '100',
-                                                                                                                                                style: TextStyle(
-                                                                                                                                                    color: Colors.white,
-                                                                                                                                                    fontSize: 11.90,
-                                                                                                                                                    fontFamily: 'Inter',
-                                                                                                                                                    fontWeight: FontWeight.w400,
-                                                                                                                                                    height: 1.68,
-                                                                                                                                                ),
-                                                                                                                                            ),
-                                                                                                                                        ),
-                                                                                                                                    ),
-                                                                                                                                ],
-                                                                                                                            ),
-                                                                                                                        ),
-                                                                                                                    ),
-                                                                                                                ],
-                                                                                                            ),
-                                                                                                        ),
-                                                                                                    ),
-                                                                                                ],
-                                                                                            ),
-                                                                                        ),
-                                                                                        Container(
-                                                                                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
-                                                                                            decoration: ShapeDecoration(
-                                                                                                color: const Color(0xFFA79BD1),
-                                                                                                shape: RoundedRectangleBorder(
-                                                                                                    borderRadius: BorderRadius.circular(9999),
-                                                                                                ),
-                                                                                                shadows: [
-                                                                                                    BoxShadow(
-                                                                                                        color: Color(0x00000000),
-                                                                                                        blurRadius: 0,
-                                                                                                        offset: Offset(0, 0),
-                                                                                                        spreadRadius: 0,
-                                                                                                    )BoxShadow(
-                                                                                                        color: Color(0x00000000),
-                                                                                                        blurRadius: 0,
-                                                                                                        offset: Offset(0, 0),
-                                                                                                        spreadRadius: 0,
-                                                                                                    )
-                                                                                                ],
-                                                                                            ),
-                                                                                            child: Row(
-                                                                                                mainAxisSize: MainAxisSize.min,
-                                                                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                                                                crossAxisAlignment: CrossAxisAlignment.center,
-                                                                                                spacing: 10,
-                                                                                                children: [
-                                                                                                    SizedBox(
-                                                                                                        width: 42.31,
-                                                                                                        height: 18.40,
-                                                                                                        child: Text(
-                                                                                                            'Replay',
-                                                                                                            textAlign: TextAlign.center,
-                                                                                                            style: TextStyle(
-                                                                                                                color: const Color(0xFF1A103C),
-                                                                                                                fontSize: 11.90,
-                                                                                                                fontFamily: 'Inter',
-                                                                                                                fontWeight: FontWeight.w500,
-                                                                                                                height: 1.68,
-                                                                                                            ),
-                                                                                                        ),
-                                                                                                    ),
-                                                                                                ],
-                                                                                            ),
-                                                                                        ),
-                                                                                    ],
-                                                                                ),
-                                                                            ),
-                                                                        ],
-                                                                    ),
-                                                                ),
-                                                            ],
-                                                        ),
-                                                    ),
-                                                ],
-                                            ),
-                                        ),
-                                    ],
-                                ),
-                            ),
-                            Positioned(
-                                left: 186,
-                                top: 1200,
-                                child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    spacing: 8,
-                                    children: [
-                                        Container(
-                                            width: 196.60,
-                                            height: 36,
-                                            decoration: ShapeDecoration(
-                                                color: const Color(0xCC241445),
-                                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                                                shadows: [
-                                                    BoxShadow(
-                                                        color: Color(0x00000000),
-                                                        blurRadius: 0,
-                                                        offset: Offset(0, 0),
-                                                        spreadRadius: 0,
-                                                    )BoxShadow(
-                                                        color: Color(0x00000000),
-                                                        blurRadius: 0,
-                                                        offset: Offset(0, 0),
-                                                        spreadRadius: 0,
-                                                    )BoxShadow(
-                                                        color: Color(0x19000000),
-                                                        blurRadius: 15,
-                                                        offset: Offset(0, 10),
-                                                        spreadRadius: -3,
-                                                    )BoxShadow(
-                                                        color: Color(0x19000000),
-                                                        blurRadius: 6,
-                                                        offset: Offset(0, 4),
-                                                        spreadRadius: -4,
-                                                    )
-                                                ],
-                                            ),
-                                            child: Stack(
-                                                children: [
-                                                    Positioned(
-                                                        left: 12,
-                                                        top: 8,
-                                                        child: Container(
-                                                            width: 172.60,
-                                                            height: 20,
-                                                            child: Stack(
-                                                                children: [
-                                                                    Positioned(
-                                                                        left: 0,
-                                                                        top: 0.80,
-                                                                        child: SizedBox(
-                                                                            width: 172.60,
-                                                                            height: 18.40,
-                                                                            child: Text(
-                                                                                'Need guidance, apprentice?',
-                                                                                style: TextStyle(
-                                                                                    color: Colors.white,
-                                                                                    fontSize: 11.90,
-                                                                                    fontFamily: 'Inter',
-                                                                                    fontWeight: FontWeight.w400,
-                                                                                    height: 1.68,
-                                                                                ),
-                                                                            ),
-                                                                        ),
-                                                                    ),
-                                                                ],
-                                                            ),
-                                                        ),
-                                                    ),
-                                                ],
-                                            ),
-                                        ),
-                                        Container(
-                                            width: 56,
-                                            height: 56,
-                                            decoration: ShapeDecoration(
-                                                color: Colors.black.withValues(alpha: 0),
-                                                shape: RoundedRectangleBorder(
-                                                    borderRadius: BorderRadius.circular(9999),
-                                                ),
-                                                shadows: [
-                                                    BoxShadow(
-                                                        color: Color(0x00000000),
-                                                        blurRadius: 0,
-                                                        offset: Offset(0, 0),
-                                                        spreadRadius: 0,
-                                                    )BoxShadow(
-                                                        color: Color(0x00000000),
-                                                        blurRadius: 0,
-                                                        offset: Offset(0, 0),
-                                                        spreadRadius: 0,
-                                                    )BoxShadow(
-                                                        color: Color(0x998E74FF),
-                                                        blurRadius: 15,
-                                                        offset: Offset(0, 0),
-                                                        spreadRadius: 0,
-                                                    )
-                                                ],
-                                            ),
-                                            child: Stack(
-                                                children: [
-                                                    Positioned(
-                                                        left: 8,
-                                                        top: 8,
-                                                        child: Container(
-                                                            width: 40,
-                                                            height: 40,
-                                                            child: Stack(
-                                                                children: [
-                                                                    Positioned(
-                                                                        left: 0,
-                                                                        top: 0,
-                                                                        child: Container(
-                                                                            width: 40,
-                                                                            height: 40,
-                                                                            decoration: ShapeDecoration(
-                                                                                image: DecorationImage(
-                                                                                    image: NetworkImage("https://placehold.co/40x40"),
-                                                                                    fit: BoxFit.cover,
-                                                                                ),
-                                                                                shape: RoundedRectangleBorder(
-                                                                                    side: BorderSide(width: 1, color: Colors.white),
-                                                                                    borderRadius: BorderRadius.circular(9999),
-                                                                                ),
-                                                                            ),
-                                                                        ),
-                                                                    ),
-                                                                    Positioned(
-                                                                        left: 28,
-                                                                        top: -4,
-                                                                        child: Container(
-                                                                            width: 16,
-                                                                            height: 16,
-                                                                            decoration: ShapeDecoration(
-                                                                                color: const Color(0xFFFFCC57),
-                                                                                shape: RoundedRectangleBorder(
-                                                                                    side: BorderSide(width: 1, color: Colors.white),
-                                                                                    borderRadius: BorderRadius.circular(9999),
-                                                                                ),
-                                                                            ),
-                                                                        ),
-                                                                    ),
-                                                                ],
-                                                            ),
-                                                        ),
-                                                    ),
-                                                ],
-                                            ),
-                                        ),
-                                    ],
-                                ),
-                            ),
-                        ],
-                    ),
+          Row(
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: const BoxDecoration(
+                  color: AppColors.surface,
+                  shape: BoxShape.circle,
                 ),
+                child: const Icon(Icons.rocket_launch_rounded,
+                    color: AppColors.primary, size: 24),
+              ),
+              const SizedBox(width: 12),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Epic Missions', style: AppTextStyles.h2),
+                  Text('Advanced coding challenges',
+                      style: AppTextStyles.bodySm),
+                ],
+              ),
+            ],
+          ),
+          Container(
+            padding: const EdgeInsets.all(13),
+            decoration: const BoxDecoration(
+              color: AppColors.surface,
+              shape: BoxShape.circle,
             ),
-            Positioned(
-                left: 0,
-                top: 764,
-                child: Container(
-                    width: 394,
-                    padding: const EdgeInsets.only(
-                        top: 8,
-                        left: 16,
-                        right: 16,
-                        bottom: 16,
-                    ),
-                    decoration: ShapeDecoration(
-                        color: const Color(0xFF2D1B58),
-                        shape: RoundedRectangleBorder(
-                            side: BorderSide(color: const Color(0xFF4A3880)),
-                            borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(12),
-                                topRight: Radius.circular(12),
-                            ),
-                        ),
-                    ),
-                    child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        spacing: 10,
-                        children: [
-                            Container(
-                                width: 64,
-                                height: 64,
-                                padding: const EdgeInsets.all(8),
-                                child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    spacing: 4,
-                                    children: [
-                                        Container(
-                                            width: 27,
-                                            height: 28,
-                                            child: Row(
-                                                mainAxisSize: MainAxisSize.min,
-                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                crossAxisAlignment: CrossAxisAlignment.center,
-                                                spacing: 10,
-                                                children: [
-                                                ,
-                                                ],
-                                            ),
-                                        ),
-                                        Text(
-                                            'Home',
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                                color: const Color(0xFFA79BD1),
-                                                fontSize: 10.20,
-                                                fontFamily: 'Inter',
-                                                fontWeight: FontWeight.w400,
-                                                height: 1.57,
-                                            ),
-                                        ),
-                                    ],
-                                ),
-                            ),
-                            Container(
-                                width: 64,
-                                height: 64,
-                                padding: const EdgeInsets.all(8),
-                                child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    spacing: 4,
-                                    children: [
-                                        Container(
-                                            width: 28,
-                                            height: 28,
-                                            child: Row(
-                                                mainAxisSize: MainAxisSize.min,
-                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                crossAxisAlignment: CrossAxisAlignment.center,
-                                                spacing: 10,
-                                                children: [
-                                                ,
-                                                ],
-                                            ),
-                                        ),
-                                        Text(
-                                            'Roadmap',
-                                            style: TextStyle(
-                                                color: const Color(0xFFA79BD1),
-                                                fontSize: 10.20,
-                                                fontFamily: 'Inter',
-                                                fontWeight: FontWeight.w400,
-                                                height: 1.57,
-                                            ),
-                                        ),
-                                    ],
-                                ),
-                            ),
-                            Container(
-                                width: 64,
-                                height: 64,
-                                padding: const EdgeInsets.all(8),
-                                child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    spacing: 4,
-                                    children: [
-                                        Container(
-                                            padding: const EdgeInsets.all(8),
-                                            decoration: ShapeDecoration(
-                                                color: const Color(0xFF3D2A6E),
-                                                shape: RoundedRectangleBorder(
-                                                    borderRadius: BorderRadius.circular(9999),
-                                                ),
-                                                shadows: [
-                                                    BoxShadow(
-                                                        color: Color(0x00000000),
-                                                        blurRadius: 0,
-                                                        offset: Offset(0, 0),
-                                                        spreadRadius: 0,
-                                                    )BoxShadow(
-                                                        color: Color(0x00000000),
-                                                        blurRadius: 0,
-                                                        offset: Offset(0, 0),
-                                                        spreadRadius: 0,
-                                                    )BoxShadow(
-                                                        color: Color(0xFF8E74FF),
-                                                        blurRadius: 8,
-                                                        offset: Offset(0, 0),
-                                                        spreadRadius: 0,
-                                                    )
-                                                ],
-                                            ),
-                                            child: Row(
-                                                mainAxisSize: MainAxisSize.min,
-                                                mainAxisAlignment: MainAxisAlignment.start,
-                                                crossAxisAlignment: CrossAxisAlignment.center,
-                                                spacing: 10,
-                                                children: [
-                                                ,
-                                                ],
-                                            ),
-                                        ),
-                                        SizedBox(
-                                            width: 43,
-                                            height: 16,
-                                            child: Text(
-                                                'Missions',
-                                                style: TextStyle(
-                                                    color: const Color(0xFFFFCC57),
-                                                    fontSize: 10.20,
-                                                    fontFamily: 'Inter',
-                                                    fontWeight: FontWeight.w400,
-                                                    height: 1.57,
-                                                ),
-                                            ),
-                                        ),
-                                    ],
-                                ),
-                            ),
-                            Container(
-                                width: 64,
-                                height: 64,
-                                padding: const EdgeInsets.all(8),
-                                child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    spacing: 4,
-                                    children: [
-                                        Container(
-                                            width: 26,
-                                            height: 24,
-                                            child: Column(
-                                                mainAxisSize: MainAxisSize.min,
-                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                crossAxisAlignment: CrossAxisAlignment.center,
-                                                spacing: 10,
-                                                children: [
-                                                ,
-                                                ],
-                                            ),
-                                        ),
-                                        SizedBox(
-                                            width: 27.91,
-                                            height: 16,
-                                            child: Text(
-                                                'Guild',
-                                                style: TextStyle(
-                                                    color: const Color(0xFFA79BD1),
-                                                    fontSize: 10.20,
-                                                    fontFamily: 'Inter',
-                                                    fontWeight: FontWeight.w400,
-                                                    height: 1.57,
-                                                ),
-                                            ),
-                                        ),
-                                    ],
-                                ),
-                            ),
-                        ],
-                    ),
-                ),
-            ),
+            child: const Icon(Icons.filter_list_rounded,
+                color: AppColors.textBody, size: 22),
+          ),
         ],
-    ),
-)
+      ),
+    );
+  }
+
+  Widget _buildFilterChips() {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Row(
+        children: _filters.map((filter) {
+          final isSelected = _selectedFilter == filter;
+          return Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: GestureDetector(
+              onTap: () => setState(() => _selectedFilter = filter),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 250),
+                curve: Curves.easeInOut,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+                decoration: ShapeDecoration(
+                  color: isSelected
+                      ? AppColors.surfaceLight
+                      : const Color(0xFF241445),
+                  shape: RoundedRectangleBorder(
+                    side: BorderSide(
+                      width: 1,
+                      color: isSelected
+                          ? AppColors.primary
+                          : Colors.transparent,
+                    ),
+                    borderRadius: BorderRadius.circular(9999),
+                  ),
+                ),
+                child: Text(
+                  filter,
+                  textAlign: TextAlign.center,
+                  style: AppTextStyles.bodyMd.copyWith(
+                    color: isSelected ? AppColors.white : AppColors.textBody,
+                    fontWeight:
+                        isSelected ? FontWeight.w600 : FontWeight.w400,
+                    fontSize: 13,
+                  ),
+                ),
+              ),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  Widget _buildMissionList(List<MissionModel> missions) {
+    if (missions.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.search_off_rounded,
+                color: AppColors.textBody.withOpacity(0.5), size: 64),
+            const SizedBox(height: 12),
+            Text(
+              'No missions found',
+              style: AppTextStyles.bodyLg.copyWith(color: AppColors.textBody),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'Try selecting a different filter',
+              style: AppTextStyles.bodySm,
+            ),
+          ],
+        ),
+      );
+    }
+
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      itemCount: missions.length,
+      itemBuilder: (context, index) {
+        return _buildMissionCard(missions[index], index);
+      },
+    );
+  }
+
+  Widget _buildMissionCard(MissionModel mission, int index) {
+    final typeColor = _getTypeColor(mission.type);
+    final difficultyColor = _getDifficultyColor(mission.difficulty);
+
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0.0, end: 1.0),
+      duration: Duration(milliseconds: 400 + (index * 100)),
+      curve: Curves.easeOutCubic,
+      builder: (context, value, child) {
+        return Transform.translate(
+          offset: Offset(0, 30 * (1 - value)),
+          child: Opacity(opacity: value, child: child),
+        );
+      },
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 16),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () => context.go('/missions/${mission.id}'),
+            borderRadius: BorderRadius.circular(12),
+            splashColor: typeColor.withOpacity(0.1),
+            highlightColor: typeColor.withOpacity(0.05),
+            child: CustomSurfaceCard(
+              padding: const EdgeInsets.all(0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Top gradient accent bar
+                  Container(
+                    height: 4,
+                    decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(12),
+                        topRight: Radius.circular(12),
+                      ),
+                      gradient: LinearGradient(
+                        colors: [typeColor, typeColor.withOpacity(0.3)],
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Type badge + Status
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(_getTypeIcon(mission.type),
+                                    color: typeColor, size: 16),
+                                const SizedBox(width: 6),
+                                Text(
+                                  mission.type,
+                                  style: AppTextStyles.bodySm.copyWith(
+                                    color: typeColor,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 4),
+                              decoration: ShapeDecoration(
+                                color: AppColors.textBody.withOpacity(0.15),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(9999),
+                                ),
+                              ),
+                              child: Text(
+                                'available',
+                                style: AppTextStyles.label.copyWith(
+                                  color: AppColors.textBody,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+
+                        // Title
+                        Text(
+                          mission.title,
+                          style: AppTextStyles.h3,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 6),
+
+                        // Description
+                        Text(
+                          mission.description,
+                          style: AppTextStyles.bodySm,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 16),
+
+                        // Bottom row: XP + Difficulty + Arrow
+                        Row(
+                          children: [
+                            // XP badge
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 6),
+                              decoration: ShapeDecoration(
+                                color: const Color(0xFF241445),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(9999),
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(Icons.auto_awesome,
+                                      color: AppColors.accentGold, size: 14),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    '${mission.xpReward} XP',
+                                    style: AppTextStyles.bodySm.copyWith(
+                                      color: AppColors.white,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+
+                            // Difficulty badge
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 6),
+                              decoration: ShapeDecoration(
+                                color: const Color(0xFF241445),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(9999),
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                      _getDifficultyIcon(mission.difficulty),
+                                      color: difficultyColor,
+                                      size: 14),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    mission.difficulty,
+                                    style: AppTextStyles.bodySm.copyWith(
+                                      color: difficultyColor,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                            const Spacer(),
+
+                            // Navigate arrow
+                            Container(
+                              width: 32,
+                              height: 32,
+                              decoration: BoxDecoration(
+                                color: typeColor.withOpacity(0.15),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(Icons.arrow_forward_rounded,
+                                  color: typeColor, size: 18),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLoadingShimmer() {
+    return AnimatedBuilder(
+      animation: _shimmerController,
+      builder: (context, _) {
+        return ListView.builder(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          itemCount: 4,
+          itemBuilder: (context, index) {
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: Container(
+                height: 160,
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppColors.border),
+                ),
+                child: ShaderMask(
+                  shaderCallback: (bounds) {
+                    return LinearGradient(
+                      begin: Alignment.centerLeft,
+                      end: Alignment.centerRight,
+                      colors: [
+                        AppColors.surface,
+                        AppColors.surfaceLight.withOpacity(0.5),
+                        AppColors.surface,
+                      ],
+                      stops: [
+                        _shimmerController.value - 0.3,
+                        _shimmerController.value,
+                        _shimmerController.value + 0.3,
+                      ].map((s) => s.clamp(0.0, 1.0)).toList(),
+                    ).createShader(bounds);
+                  },
+                  blendMode: BlendMode.srcATop,
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: 80,
+                          height: 14,
+                          decoration: BoxDecoration(
+                            color: AppColors.surfaceLight,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        Container(
+                          width: double.infinity,
+                          height: 20,
+                          decoration: BoxDecoration(
+                            color: AppColors.surfaceLight,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Container(
+                          width: 200,
+                          height: 14,
+                          decoration: BoxDecoration(
+                            color: AppColors.surfaceLight,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                        ),
+                        const Spacer(),
+                        Row(
+                          children: [
+                            Container(
+                              width: 80,
+                              height: 28,
+                              decoration: BoxDecoration(
+                                color: AppColors.surfaceLight,
+                                borderRadius: BorderRadius.circular(9999),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Container(
+                              width: 80,
+                              height: 28,
+                              decoration: BoxDecoration(
+                                color: AppColors.surfaceLight,
+                                borderRadius: BorderRadius.circular(9999),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+}

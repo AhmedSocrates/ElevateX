@@ -15,6 +15,8 @@ import '../../features/quests/screens/quiz_screen.dart';
 import '../../features/quests/screens/frontend_quest_screen.dart';
 import '../../features/battles/screens/battles_screen.dart';
 import '../../features/progress/screens/progress_screen.dart';
+import '../../features/missions/screens/missions_screen.dart';
+import '../../features/missions/screens/mission_solve_screen.dart';
 
 import '../widgets/main_scaffold.dart';
 
@@ -120,8 +122,18 @@ class AppRouter {
             navigatorKey: _shellNavigatorMissionsKey,
             routes: [
               GoRoute(
-                path: '/quests',
-                builder: (context, state) => const FrontendQuestScreen(),
+                path: '/missions',
+                builder: (context, state) => const MissionsScreen(),
+                routes: [
+                  GoRoute(
+                    path: ':id',
+                    parentNavigatorKey: _rootNavigatorKey,
+                    builder: (context, state) {
+                      final missionId = state.pathParameters['id']!;
+                      return MissionSolveScreen(missionId: missionId);
+                    },
+                  ),
+                ],
               ),
             ],
           ),
