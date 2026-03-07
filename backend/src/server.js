@@ -3,7 +3,7 @@ import 'dotenv/config';// MUST be the first line to load variables
 import express from 'express';
 import cors from 'cors';
 import connectDB from './config/db.js';
-
+import authRouter from './features/auth/auth.routes.js';
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -15,6 +15,7 @@ app.use(express.json()); // Allows the server to accept JSON data in the body
 app.get('/', (req, res) => {
   res.send({ message: "Welcome to the ElevateX API!" });
 });
+app.use('/api/auth', authRouter);
 
 // 3. Start the Server
 app.listen(PORT, async () => {
