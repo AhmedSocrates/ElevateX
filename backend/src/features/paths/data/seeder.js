@@ -12,7 +12,7 @@ const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.resolve(__dirname, '../../../../.env') });
 
 import connectDB from '../../../config/db.js'; 
-import { CareerPath, Node } from '../paths.model.js'; 
+import { CareerPath, Node } from '../paths.model.mjs'; 
 import { careerPathsData, nodesData } from './data.js';
 
 const importData = async () => {
