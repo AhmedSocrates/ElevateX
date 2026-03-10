@@ -25,7 +25,7 @@ export const careerPathsData = [
 export const nodesData = [
   // --- Frontend Nodes ---
   {
-    "pathId": "ObjectId('65f1a2b3c4d5e6f7a8b9c001')",
+    "pathId": "65f1a2b3c4d5e6f7a8b9c001",
     "orderIndex": 1,
     "title": "Basics of Computer",
     "type": "reading",
@@ -35,7 +35,7 @@ export const nodesData = [
     }
   },
   {
-    "pathId": "ObjectId('65f1a2b3c4d5e6f7a8b9c001')",
+    "pathId": "65f1a2b3c4d5e6f7a8b9c001",
     "orderIndex": 2,
     "title": "Internet and Web",
     "type": "multiple_choice",
@@ -47,7 +47,7 @@ export const nodesData = [
     }
   },
   {
-    "pathId": "ObjectId('65f1a2b3c4d5e6f7a8b9c001')",
+    "pathId": "65f1a2b3c4d5e6f7a8b9c001",
     "orderIndex": 3,
     "title": "Programming: HTML, CSS & JavaScript",
     "type": "multiple_choice",
@@ -59,7 +59,7 @@ export const nodesData = [
     }
   },
   {
-    "pathId": "ObjectId('65f1a2b3c4d5e6f7a8b9c001')",
+    "pathId": "65f1a2b3c4d5e6f7a8b9c001",
     "orderIndex": 4,
     "title": "Frontend Frameworks",
     "type": "reading",
@@ -71,7 +71,7 @@ export const nodesData = [
 
   // --- Backend Nodes ---
   {
-    "pathId": "ObjectId('65f1a2b3c4d5e6f7a8b9c002')",
+    "pathId": "65f1a2b3c4d5e6f7a8b9c002",
     "orderIndex": 1,
     "title": "Internet and Web",
     "type": "reading",
@@ -81,7 +81,7 @@ export const nodesData = [
     }
   },
   {
-    "pathId": "ObjectId('65f1a2b3c4d5e6f7a8b9c002')",
+    "pathId": "65f1a2b3c4d5e6f7a8b9c002",
     "orderIndex": 2,
     "title": "Core Skills: Languages & Databases",
     "type": "multiple_choice",
@@ -93,7 +93,7 @@ export const nodesData = [
     }
   },
   {
-    "pathId": "ObjectId('65f1a2b3c4d5e6f7a8b9c002')",
+    "pathId": "65f1a2b3c4d5e6f7a8b9c002",
     "orderIndex": 3,
     "title": "Backend Frameworks",
     "type": "multiple_choice",
@@ -105,7 +105,7 @@ export const nodesData = [
     }
   },
   {
-    "pathId": "ObjectId('65f1a2b3c4d5e6f7a8b9c002')",
+    "pathId": "65f1a2b3c4d5e6f7a8b9c002",
     "orderIndex": 4,
     "title": "Version Control Systems",
     "type": "multiple_choice",
