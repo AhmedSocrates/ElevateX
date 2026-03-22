@@ -41,6 +41,8 @@ const userSchema = new mongoose.Schema({
     inventory: {
         streakPausers: {type:Number, default:0},
         unlockedBadges: [{type: mongoose.Schema.Types.ObjectId, ref: 'StoreItem'}],
+        unlockedThemes: [{ type: String, default: ['default_light', 'default_dark'] }],
+        activeTheme: { type: String, default: 'default_light' }
     },
     activePathId: {
         type: mongoose.Schema.Types.ObjectId,

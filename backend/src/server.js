@@ -14,6 +14,7 @@ import cors from 'cors';
 import connectDB from './config/db.js';
 import authRoutes from './features/auth/auth.routes.js';
 import userRoutes from './features/users/user.routes.js';
+import storeRoutes from './features/store/store.routes.js';
 import pathsRoutes from './features/paths/paths.routes.mjs';
 
 const app = express();
@@ -28,6 +29,7 @@ app.get('/', (req, res) => {
 });
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/store', storeRoutes);
 app.use('/api/paths', pathsRoutes);
 
 // 3. Start the Server
