@@ -5,6 +5,7 @@ import cors from 'cors';
 import connectDB from './config/db.js';
 import authRoutes from './features/auth/auth.routes.js';
 import userRoutes from './features/users/user.routes.js';
+import storeRoutes from './features/store/store.routes.js';
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -18,6 +19,7 @@ app.get('/', (req, res) => {
 });
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/store', storeRoutes);
 
 // 3. Start the Server
 app.listen(PORT, async () => {
