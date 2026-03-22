@@ -54,3 +54,4 @@ ElevateX utilizes a decoupled architecture where the Flutter mobile client commu
 ---
 
 *Note: This repository is actively maintained by the ElevateX development team. Source code and local environment setups are restricted to core contributors.*
+
