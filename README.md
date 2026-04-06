@@ -12,7 +12,7 @@ By combining the addictive loops of gaming with real-world career roadmaps, Elev
 Traditional learning apps often suffer from high drop-off rates. ElevateX solves this by introducing core gamification mechanics—such as XP, leveling, daily streaks, and digital economies—directly into the educational and productivity journey. 
 
 Users embark on specific "Career Paths" (e.g., *Zero to Flutter Master*), completing nodes and boss fights to earn rewards, climb leaderboards, and build real-world habits.
-
+Backend Stage (30%)
 ---
 
 ##  Core Features (Active Development)
@@ -47,7 +47,7 @@ ElevateX is built using a modern, scalable client-server architecture.
 
 ElevateX utilizes a decoupled architecture where the Flutter mobile client communicates with the Express backend via a secure, stateless REST API. 
 
-* **Authentication Flow:** Users authenticate via the backend, receiving a JWT that is stored in the device's secure enclave. This token acts as a digital wristband for all future requests.
+* **Authentication Flow:** Users authenticate via the backend, receiving a JWT that is stored in the device's secure enclave. This token acts as a digital wristband for all future requests. 
 * **Middleware Interceptors:** The backend utilizes custom Express middleware to act as "bouncers," validating tokens and automatically calculating daily streaks before granting access to protected resources.
 * **Data Embeds:** MongoDB is optimized using embedded document schemas to quickly deliver complex Quest and Roadmap data to the mobile client in single, efficient network requests.
 
